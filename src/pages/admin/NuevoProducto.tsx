@@ -9,13 +9,15 @@ export default function NuevoProducto() {
   const navigate = useNavigate();
   const { isDark } = useTheme();
   const { anadirProducto } = useProductos();
- 
+
+
   const [formData, setFormData] = useState({
     nombre: '',
     categoria: 'Bocadillo',
     alergenos: [] as string[],
-    precio: 0.00,
-    tamano: 'Entero',
+    precio: 0.00, // Precio base para otras categorías
+    precioEntero: 0.00, // Específico para Bocadillo
+    precioMedio: 0.00,   // Específico para Bocadillo
     ingredientes: [] as string[]
   });
 
@@ -26,16 +28,20 @@ export default function NuevoProducto() {
   const listaCategorias = ['Bocadillo', 'Bebidas frías', 'Bebida caliente', 'Bollería', 'Pack/Menú'];
   const listaAlergenos = ['Gluten', 'Crustáceos', 'Huevo', 'Pescado', 'Cacahuetes', 'Soja', 'Leche', 'Frutos con cáscara', 'Apio', 'Mostaza', 'Granos de sésamo', 'Dióxido de azufre y sulfitos', 'Altramuces', 'Moluscos'];
   const listaIngredientes = ['Chorizo', 'Salchichón', 'Queso', 'Jamón York', 'Pechuga de pavo'];
-  const listaTamanos = ['Entero', 'Medio'];
 
 
-  const esFormularioValido = formData.nombre.trim() !== '' && formData.precio > 0;
+  // Validación: Si es bocadillo requiere ambos precios > 0. Si no, solo el precio base.
+  const esFormularioValido = formData.nombre.trim() !== '' && (
+    formData.categoria === 'Bocadillo'
+      ? (formData.precioEntero > 0 && formData.precioMedio > 0)
+      : formData.precio > 0
+  );
 
 
-  const ajustarPrecio = (cantidad: number) => {
+  const ajustarPrecio = (campo: 'precio' | 'precioEntero' | 'precioMedio', cantidad: number) => {
     setFormData(prev => ({
       ...prev,
-      precio: Math.max(0, parseFloat((prev.precio + cantidad).toFixed(2)))
+      [campo]: Math.max(0, parseFloat((prev[campo] + cantidad).toFixed(2)))
     }));
   };
 
@@ -54,12 +60,15 @@ export default function NuevoProducto() {
 
   const handleAñadir = () => {
     if (esFormularioValido) {
-      anadirProducto({
+      const datosFinales = {
         ...formData,
+        // Si no es bocadillo, limpiamos los precios de tamaño para evitar basura en la DB
+        precioEntero: formData.categoria === 'Bocadillo' ? formData.precioEntero : undefined,
+        precioMedio: formData.categoria === 'Bocadillo' ? formData.precioMedio : undefined,
         ingredientes: formData.categoria === 'Bocadillo' ? formData.ingredientes : [],
-        tamano: formData.categoria === 'Bocadillo' ? formData.tamano : undefined,
         img: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=150&auto=format&fit=crop'
-      });
+      };
+      anadirProducto(datosFinales);
       setMostrandoExito(true);
     }
   };
@@ -85,19 +94,28 @@ export default function NuevoProducto() {
   };
 
 
+  // Componente Reutilizable para el Selector de Precio
+  const SelectorPrecio = ({ label, valor, onChange }: { label: string, valor: number, onChange: (n: number) => void }) => (
+    <div className="mb-4">
+      <label className="block text-sm font-bold mb-2 ml-1" style={{ color: colores.label }}>{label}</label>
+      <div className="flex items-center justify-between p-2 rounded-2xl border" style={{ backgroundColor: colores.input, borderColor: colores.borde }}>
+        <button onClick={() => onChange(-0.50)} className="p-4 rounded-xl active:scale-90 transition-transform" style={{ backgroundColor: isDark ? '#1A120B' : '#F3F4F6', color: colores.texto }}><Minus size={24} /></button>
+        <span className="text-3xl font-black" style={{ color: colores.texto }}>{valor.toFixed(2)}€</span>
+        <button onClick={() => onChange(0.50)} className="p-4 rounded-xl active:scale-90 transition-transform" style={{ backgroundColor: isDark ? '#1A120B' : '#F3F4F6', color: colores.texto }}><Plus size={24} /></button>
+      </div>
+    </div>
+  );
+
+
   return (
     <div className="min-h-screen p-6 pb-32 flex flex-col transition-all duration-300" style={{ backgroundColor: colores.fondo }}>
-     
       <header className="flex items-center mb-8 relative">
-        <Link to="/admin/menu-gestion" className="absolute left-0 p-2 -ml-2" style={{ color: colores.texto }}>
-          <ChevronLeft size={28} />
-        </Link>
+        <Link to="/admin/menu-gestion" className="absolute left-0 p-2 -ml-2" style={{ color: colores.texto }}><ChevronLeft size={28} /></Link>
         <h1 className="w-full text-center text-2xl font-bold" style={{ color: colores.texto }}>Nuevo producto</h1>
       </header>
 
 
       <div className="space-y-6 flex-1">
-       
         {/* NOMBRE */}
         <div>
           <label className="block text-sm font-bold mb-2 ml-1" style={{ color: colores.label }}>Nombre del producto</label>
@@ -108,38 +126,6 @@ export default function NuevoProducto() {
             style={{ backgroundColor: colores.input, borderColor: colores.borde, color: colores.texto }}
             className="w-full border rounded-xl px-4 py-4 outline-none transition-all placeholder:opacity-20"
           />
-        </div>
-
-
-        {/* PRECIO TÁCTIL */}
-        <div>
-          <label className="block text-sm font-bold mb-2 ml-1" style={{ color: colores.label }}>Precio (€)</label>
-          <div className="flex items-center justify-between p-2 rounded-2xl border" style={{ backgroundColor: colores.input, borderColor: colores.borde }}>
-            <button
-              onClick={() => ajustarPrecio(-0.50)}
-              className="p-4 rounded-xl active:scale-90 transition-transform"
-              style={{ backgroundColor: isDark ? '#1A120B' : '#F3F4F6', color: colores.texto }}
-            >
-              <Minus size={24} />
-            </button>
-           
-            <span className="text-3xl font-black" style={{ color: colores.texto }}>
-              {formData.precio.toFixed(2)}€
-            </span>
-
-
-            <button
-              onClick={() => ajustarPrecio(0.50)}
-              className="p-4 rounded-xl active:scale-90 transition-transform"
-              style={{ backgroundColor: isDark ? '#1A120B' : '#F3F4F6', color: colores.texto }}
-            >
-              <Plus size={24} />
-            </button>
-          </div>
-          <div className="flex justify-center gap-4 mt-2">
-            <button onClick={() => ajustarPrecio(-0.10)} className="text-xs font-bold px-3 py-1 rounded-full border shadow-sm" style={{ color: colores.label, borderColor: colores.borde, backgroundColor: colores.input }}>-0.10</button>
-            <button onClick={() => ajustarPrecio(0.10)} className="text-xs font-bold px-3 py-1 rounded-full border shadow-sm" style={{ color: colores.label, borderColor: colores.borde, backgroundColor: colores.input }}>+0.10</button>
-          </div>
         </div>
 
 
@@ -162,34 +148,33 @@ export default function NuevoProducto() {
         </div>
 
 
-        {/* SECCIÓN ESPECIAL BOCADILLOS */}
+        {/* PRECIOS DINÁMICOS */}
+        {formData.categoria === 'Bocadillo' ? (
+          <div className="space-y-6">
+            <SelectorPrecio
+              label="Precio Entero (€)"
+              valor={formData.precioEntero}
+              onChange={(n) => ajustarPrecio('precioEntero', n)}
+            />
+            <SelectorPrecio
+              label="Precio Medio (€)"
+              valor={formData.precioMedio}
+              onChange={(n) => ajustarPrecio('precioMedio', n)}
+            />
+          </div>
+        ) : (
+          <SelectorPrecio
+            label="Precio (€)"
+            valor={formData.precio}
+            onChange={(n) => ajustarPrecio('precio', n)}
+          />
+        )}
+
+
+        {/* SECCIÓN ESPECIAL BOCADILLOS: INGREDIENTES */}
         {formData.categoria === 'Bocadillo' && (
           <div className="p-5 rounded-2xl border space-y-6 animate-in fade-in zoom-in-95 duration-300"
                style={{ backgroundColor: isDark ? 'rgba(111, 78, 55, 0.1)' : 'rgba(111, 78, 55, 0.05)', borderColor: colores.borde }}>
-           
-            {/* TAMAÑO */}
-            <div>
-               <label className="block text-sm font-bold mb-3" style={{ color: colores.label }}>Tamaño</label>
-               <div className="flex gap-3">
-                  {listaTamanos.map(tam => (
-                    <button
-                      key={tam}
-                      onClick={() => setFormData(prev => ({ ...prev, tamano: tam }))}
-                      style={{
-                        backgroundColor: formData.tamano === tam ? '#6F4E37' : colores.fondo,
-                        borderColor: formData.tamano === tam ? '#6F4E37' : colores.borde,
-                        color: formData.tamano === tam ? '#FFFFFF' : colores.texto
-                      }}
-                      className="flex-1 py-3 rounded-xl text-sm font-bold transition-all border shadow-sm"
-                    >
-                      {tam}
-                    </button>
-                  ))}
-               </div>
-            </div>
-
-
-            {/* INGREDIENTES */}
             <div>
                <label className="block text-sm font-bold mb-3" style={{ color: colores.label }}>Ingredientes principales</label>
                <div className="flex flex-wrap gap-2">
@@ -242,7 +227,6 @@ export default function NuevoProducto() {
       </div>
 
 
-      {/* BOTÓN AÑADIR */}
       <div className="mt-10 mb-6 shrink-0">
         <button
           onClick={handleAñadir}

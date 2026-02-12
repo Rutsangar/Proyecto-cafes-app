@@ -1,39 +1,46 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Añadido useNavigate
-import { MoreHorizontal, Plus, UserX, ChevronLeft } from 'lucide-react'; // Añadido ChevronLeft
+import { Link, useNavigate } from 'react-router-dom';
+import { MoreHorizontal, Plus, UserX, ChevronLeft } from 'lucide-react';
 import { useEmpleados } from '../../context/EmpleadosContext';
 import { useTheme } from '../../context/ThemeContext';
 import { cn } from '../../lib/utils';
 
+
 export default function GestionPersonal() {
-  const navigate = useNavigate(); // Hook para volver
+  const navigate = useNavigate();
   const { listaEmpleados, eliminarEmpleado } = useEmpleados();
   const { isDark } = useTheme();
   const [menuAbierto, setMenuAbierto] = useState<number | null>(null);
   const [idEliminar, setIdEliminar] = useState<number | null>(null);
 
+
   return (
-    <div className="p-6 h-full relative bg-cafe-bg min-h-screen transition-colors duration-300">
+    <div className="p-6 h-full relative bg-cafe-bg dark:bg-[#1A120B] min-h-screen transition-colors duration-300">
+     
       {/* CABECERA CON FLECHA */}
       <div className="flex items-center mb-8 mt-4 relative">
-        <button 
+        <button
           onClick={() => navigate('/admin')}
           className={cn(
-            "p-2 rounded-full shadow-sm transition-all active:scale-95 absolute left-0",
+            "p-2 rounded-full shadow-sm transition-all active:scale-95 absolute left-0 z-10",
             isDark ? "bg-[#2C221C] text-[#F5EBDC]" : "bg-white text-cafe-text"
           )}
         >
           <ChevronLeft size={24} />
         </button>
-        <h1 className="text-3xl font-bold text-center text-cafe-text flex-1">
+        <h1 className={cn(
+          "text-3xl font-bold text-center flex-1",
+          isDark ? "text-[#F5EBDC]" : "text-cafe-text"
+        )}>
           Gestión de personal
         </h1>
       </div>
 
+
       {/* Botón Nuevo Empleado */}
       <div className="flex justify-center mb-10">
-        <Link 
-            to="/admin/nuevo-empleado" 
+        <Link
+            to="/admin/nuevo-empleado"
             className="group relative p-1.5 rounded-full pr-6 pl-2 flex items-center gap-3 transition-transform active:scale-95 shadow-sm bg-[#D7CCC8] dark:bg-[#C4B6AC]"
         >
            <div className="bg-sky-300 dark:bg-[#6AD2FF] p-2 rounded-full text-white">
@@ -43,51 +50,69 @@ export default function GestionPersonal() {
         </Link>
       </div>
 
+
       {/* Lista de Empleados */}
       <div className="space-y-4">
         {listaEmpleados.map((emp) => (
-          <div 
-            key={emp.id} 
-            style={{ 
-              backgroundColor: isDark ? '#342A22' : '#FFFFFF',
-              border: isDark ? '1px solid #F5EBDC20' : '1px solid #4A3B3210'
-            }}
-            className="flex items-center justify-between p-4 rounded-2xl shadow-sm transition-all"
+          <div
+            key={emp.id}
+            className={cn(
+              "flex items-center justify-between p-4 rounded-2xl shadow-sm transition-all border",
+              isDark ? "bg-[#2C221C] border-[#F5EBDC]/10" : "bg-white border-[#4A3B32]/10"
+            )}
           >
             <div className="flex items-center gap-4">
-              <div 
-                style={{ 
+              {/* Avatar circular con la inicial */}
+              <div
+                style={{
                   backgroundColor: isDark ? '#F5EBDC' : '#6F4E3720',
                   color: isDark ? '#1E1611' : '#6F4E37'
                 }}
-                className="w-10 h-10 rounded-full flex items-center justify-center font-bold"
+                className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl shrink-0"
               >
                 {emp.nombre.charAt(0)}
               </div>
-              
-              <span className="font-bold text-cafe-text">
-                {emp.nombre}
-              </span>
+             
+              {/* Información del empleado: Nombre y Correo */}
+              <div className="flex flex-col">
+                <span className={cn(
+                  "font-bold text-lg leading-tight",
+                  isDark ? "text-[#F5EBDC]" : "text-cafe-text"
+                )}>
+                  {emp.nombre}
+                </span>
+                <span className={cn(
+                  "text-xs mt-0.5 opacity-60 font-medium",
+                  isDark ? "text-[#F5EBDC]" : "text-cafe-text"
+                )}>
+                  {emp.correo}
+                </span>
+              </div>
             </div>
-            
+           
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setMenuAbierto(menuAbierto === emp.id ? null : emp.id)}
-                className="p-2 text-gray-400 dark:text-[#F5EBDC] transition-colors"
+                className={cn(
+                  "p-2 transition-colors",
+                  isDark ? "text-[#F5EBDC]/60" : "text-gray-400"
+                )}
               >
                 <MoreHorizontal size={24} />
               </button>
 
+
+              {/* Menú desplegable de opciones */}
               {menuAbierto === emp.id && (
-                <div className="absolute right-0 top-10 w-40 bg-white dark:bg-[#2C221C] rounded-xl shadow-xl border border-black/5 dark:border-white/10 z-50 overflow-hidden">
-                  <button 
+                <div className="absolute right-0 top-10 w-40 bg-white dark:bg-[#342A22] rounded-xl shadow-xl border border-black/5 dark:border-white/10 z-50 overflow-hidden">
+                  <button
                     onClick={() => {
                         setIdEliminar(emp.id);
                         setMenuAbierto(null);
                     }}
-                    className="w-full p-3 text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 text-sm font-bold"
+                    className="w-full p-4 text-left text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2 text-sm font-bold"
                   >
-                    <UserX size={16} /> Eliminar
+                    <UserX size={18} /> Eliminar
                   </button>
                 </div>
               )}
@@ -96,27 +121,31 @@ export default function GestionPersonal() {
         ))}
       </div>
 
-      {/* MODAL DE ELIMINAR */}
+
+      {/* MODAL DE CONFIRMACIÓN PARA ELIMINAR */}
       {idEliminar !== null && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-[#A1887F] dark:bg-[#342A22] w-full max-w-sm rounded-xl shadow-2xl border border-white/10">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <div className={cn(
+              "w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden border border-white/10",
+              isDark ? "bg-[#2C221C]" : "bg-[#A1887F]"
+            )}>
                 <div className="p-8 text-center text-white">
                     <h3 className="text-lg font-bold">¿Eliminar empleado?</h3>
                     <p className="text-sm opacity-70 mt-2">Esta acción no se puede deshacer.</p>
                 </div>
                 <div className="flex border-t border-white/10">
-                    <button 
+                    <button
                         onClick={() => {
                             eliminarEmpleado(idEliminar);
                             setIdEliminar(null);
                         }}
-                        className="flex-1 p-4 text-red-300 font-bold hover:bg-black/10 transition-colors border-r border-white/10"
+                        className="flex-1 p-4 text-red-200 font-bold hover:bg-red-500/20 transition-colors border-r border-white/10"
                     >
                         Eliminar
                     </button>
-                    <button 
+                    <button
                         onClick={() => setIdEliminar(null)}
-                        className="flex-1 p-4 text-white font-bold hover:bg-black/10 transition-colors"
+                        className="flex-1 p-4 text-white font-bold hover:bg-white/10 transition-colors"
                     >
                         Cancelar
                     </button>

@@ -1,48 +1,63 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { productos as productosIniciales } from '../lib/data';
 
-// 1. Definimos la forma del producto
+
+// 1. Añadimos 'disponible' a la interfaz
 export interface Producto {
   id: number;
   nombre: string;
   precio: number;
   categoria: string;
   img: string;
+  disponible?: boolean; // <--- AÑADIR ESTO (opcional para que no de error con datos viejos)
 }
 
-// 2. Definimos qué datos y funciones tendrá el contexto
+
 interface ProductosContextType {
   listaProductos: Producto[];
   anadirProducto: (nuevo: Omit<Producto, 'id'>) => void;
-  eliminarProducto: (id: number) => void; // <--- AÑADIR ESTO
+  eliminarProducto: (id: number) => void;
+  actualizarProducto: (id: number, nuevosDatos: Partial<Producto>) => void; // <--- AÑADIR ESTO
 }
+
 
 const ProductosContext = createContext<ProductosContextType | undefined>(undefined);
 
+
 export function ProductosProvider({ children }: { children: ReactNode }) {
-  // Inicializamos con los productos del archivo data.ts
   const [listaProductos, setListaProductos] = useState<Producto[]>(productosIniciales);
 
-  // Función para añadir productos (usada en NuevoProducto.tsx)
+
   const anadirProducto = (nuevo: Omit<Producto, 'id'>) => {
     const nuevoProducto = {
       ...nuevo,
-      id: Date.now(), // Generamos un ID único temporal
+      id: Date.now(),
+      disponible: true, // <--- Por defecto, los nuevos productos están disponibles
     };
     setListaProductos((prev) => [...prev, nuevoProducto]);
   };
 
-  // --- AQUÍ PONES LA FUNCIÓN ELIMINAR ---
+
   const eliminarProducto = (id: number) => {
     setListaProductos((prev) => prev.filter(p => p.id !== id));
   };
 
+
+  // --- ESTA ES LA FUNCIÓN QUE TE FALTABA ---
+  const actualizarProducto = (id: number, nuevosDatos: Partial<Producto>) => {
+    setListaProductos((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, ...nuevosDatos } : p))
+    );
+  };
+
+
   return (
-    <ProductosContext.Provider 
-      value={{ 
-        listaProductos, 
-        anadirProducto, 
-        eliminarProducto // <--- NO OLVIDES PASARLA AQUÍ
+    <ProductosContext.Provider
+      value={{
+        listaProductos,
+        anadirProducto,
+        eliminarProducto,
+        actualizarProducto // <--- PASARLA AQUÍ
       }}
     >
       {children}
@@ -50,7 +65,7 @@ export function ProductosProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Hook para usarlo fácilmente
+
 export function useProductos() {
   const context = useContext(ProductosContext);
   if (!context) {

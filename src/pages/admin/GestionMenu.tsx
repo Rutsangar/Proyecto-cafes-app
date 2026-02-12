@@ -1,46 +1,66 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Añadido useNavigate
-import { MoreHorizontal, Plus, ChevronLeft } from 'lucide-react'; // Añadido ChevronLeft
+import { Link, useNavigate } from 'react-router-dom';
+import { MoreHorizontal, Plus, ChevronLeft, Edit3, Trash2 } from 'lucide-react';
 import { useProductos } from '../../context/ProductosContext';
 import { cn } from '../../lib/utils';
 import { useTheme } from '../../context/ThemeContext';
 
+
 export default function GestionMenu() {
-  const navigate = useNavigate(); // Hook para volver
+  const navigate = useNavigate();
   const { isDark } = useTheme();
-  const { listaProductos, eliminarProducto } = useProductos();
-  
+ 
+  // Extraemos actualizarProducto para poder cambiar el estado de disponibilidad
+  const { listaProductos, eliminarProducto, actualizarProducto } = useProductos();
+ 
   const [categoriaActiva, setCategoriaActiva] = useState("Bocadillo");
   const [menuAbierto, setMenuAbierto] = useState<number | null>(null);
   const [idEliminar, setIdEliminar] = useState<number | null>(null);
+
 
   const categorias = [
     'Bocadillo', 'Bebidas frías', 'Bebida caliente', 'Bollería', 'Pack/Menú'
   ];
 
+
   const productosFiltrados = listaProductos.filter(p => p.categoria === categoriaActiva);
+
+
+  // --- FUNCIÓN PARA CAMBIAR EL ESTADO (Habilitar / Deshabilitar) ---
+  const handleToggle = (id: number, estadoActual: boolean) => {
+    if (actualizarProducto) {
+      // Enviamos el ID y el nuevo estado invertido
+      actualizarProducto(id, { disponible: !estadoActual });
+    }
+  };
+
 
   return (
     <div className="p-6 h-full relative min-h-screen transition-colors duration-300">
-      {/* CABECERA CON FLECHA */}
+      {/* CABECERA */}
       <div className="flex items-center mb-8 mt-4 relative">
-        <button 
+        <button
           onClick={() => navigate('/admin')}
           className={cn(
-            "p-2 rounded-full shadow-sm transition-all active:scale-95 absolute left-0",
+            "p-2 rounded-full shadow-sm transition-all active:scale-95 absolute left-0 z-10",
             isDark ? "bg-[#2C221C] text-[#F5EBDC]" : "bg-white text-cafe-text"
           )}
         >
           <ChevronLeft size={24} />
         </button>
-        <h1 className="text-3xl font-bold text-center text-cafe-text flex-1">
+        <h1 className={cn(
+          "text-3xl font-bold text-center flex-1",
+          isDark ? "text-[#F5EBDC]" : "text-cafe-text"
+        )}>
           Gestión del menú
         </h1>
       </div>
 
+
+      {/* Botón Nuevo Producto */}
       <div className="flex justify-center mb-8">
-        <Link 
-            to="/admin/nuevo-producto" 
+        <Link
+            to="/admin/nuevo-producto"
             className="group relative p-1.5 rounded-full pr-6 pl-2 flex items-center gap-3 transition-transform active:scale-95 shadow-sm hover:brightness-110 bg-[#D7CCC8] dark:bg-[#C4B6AC]"
         >
            <div className="bg-sky-300 dark:bg-[#6AD2FF] text-white rounded-full p-2 shadow-sm">
@@ -52,6 +72,7 @@ export default function GestionMenu() {
         </Link>
       </div>
 
+
       {/* Categorías */}
       <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide -mx-6 px-6 mb-2">
         {categorias.map((cat) => {
@@ -60,16 +81,12 @@ export default function GestionMenu() {
             <button
               key={cat}
               onClick={() => setCategoriaActiva(cat)}
-              style={{
-                backgroundColor: isDark 
-                  ? (isActive ? '#F5EBDC' : '#2C221C') 
-                  : (isActive ? '#8D6E63' : '#FFFFFF'),
-                color: isDark 
-                  ? (isActive ? '#1E1611' : '#F5EBDC') 
-                  : (isActive ? '#FFFFFF' : '#4E342E'),
-                borderColor: isDark ? '#F5EBDC20' : '#4E342E10'
-              }}
-              className="px-5 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap border shadow-sm"
+              className={cn(
+                "px-5 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap border shadow-sm",
+                isDark
+                  ? (isActive ? "bg-[#8D6E63] text-white border-[#8D6E63]" : "bg-[#2C221C] text-[#F5EBDC] border-[#F5EBDC]/10")
+                  : (isActive ? "bg-[#8D6E63] text-white border-[#8D6E63]" : "bg-white text-[#4E342E] border-[#4E342E]/10")
+              )}
             >
               {cat}
             </button>
@@ -77,90 +94,156 @@ export default function GestionMenu() {
         })}
       </div>
 
+
       {/* Lista Productos */}
       <div className="mt-2 min-h-[300px] space-y-4">
-        {productosFiltrados.map((prod) => (
-            <div 
-              key={prod.id} 
-              style={{
-                backgroundColor: isDark ? '#2C221C' : '#FFFFFF',
-                borderColor: isDark ? '#F5EBDC10' : '#4E342E05'
-              }}
-              className="flex items-center justify-between p-4 rounded-2xl border shadow-sm transition-all"
+        {productosFiltrados.map((prod) => {
+          // Asumimos que si no existe la propiedad, está disponible por defecto
+          const estaDisponible = prod.disponible !== false;
+
+
+          return (
+            <div
+              key={prod.id}
+              className={cn(
+                "flex items-center justify-between p-4 rounded-2xl border shadow-sm transition-all duration-300",
+                isDark ? "bg-[#2C221C] border-[#F5EBDC]/10" : "bg-white border-[#4E342E]/5",
+                !estaDisponible && "opacity-60" // Feedback visual de que está desactivado
+              )}
             >
-              <span 
-                style={{ color: isDark ? '#F5EBDC' : '#4E342E' }}
-                className="font-bold text-lg truncate pr-4"
-              >
-                  {prod.nombre}
-              </span>
-              <button 
+              <div className="flex items-center gap-4 flex-1">
+                {/* INTERRUPTOR (Toggle) CONFIGURADO */}
+                <button
+                  onClick={() => handleToggle(prod.id, estaDisponible)}
+                  className={cn(
+                    "w-12 h-6 rounded-full relative transition-colors duration-300 shrink-0",
+                    estaDisponible ? "bg-green-500" : "bg-gray-400 dark:bg-gray-600"
+                  )}
+                >
+                  <div className={cn(
+                    "absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-md",
+                    estaDisponible ? "translate-x-7" : "translate-x-1"
+                  )} />
+                </button>
+
+
+                <span
+                  className={cn(
+                    "font-bold text-lg truncate transition-all",
+                    isDark ? "text-[#F5EBDC]" : "text-[#4E342E]",
+                    !estaDisponible && "line-through opacity-50"
+                  )}
+                >
+                    {prod.nombre}
+                </span>
+              </div>
+
+
+              <button
                   onClick={() => setMenuAbierto(prod.id)}
-                  style={{ color: isDark ? '#F5EBDC60' : '#9CA3AF' }}
-                  className="p-2 rounded-full hover:bg-black/10 transition-colors shrink-0"
+                  className={cn(
+                    "p-2 rounded-full hover:bg-black/10 transition-colors shrink-0",
+                    isDark ? "text-[#F5EBDC]/60" : "text-[#9CA3AF]"
+                  )}
               >
                   <MoreHorizontal size={24} />
               </button>
             </div>
-          ))}
+          );
+        })}
       </div>
 
-      {/* Menú Opciones (Editar/Eliminar) */}
+
+      {/* SUBMENÚ MODERNO (Action Sheet) */}
       {menuAbierto !== null && (
         <>
-            <div className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" onClick={() => setMenuAbierto(null)} />
-            <div className="fixed bottom-24 left-6 right-6 z-50">
-                <div 
-                  style={{ backgroundColor: isDark ? '#342A22' : '#D7CCC8' }}
-                  className="rounded-2xl overflow-hidden shadow-2xl mb-4 border border-white/10"
+          <div 
+            className="fixed inset-0 bg-black/40 z-40 backdrop-blur-[2px] animate-in fade-in duration-300" 
+            onClick={() => setMenuAbierto(null)} 
+          />
+          <div className="fixed inset-x-0 bottom-0 z-50 p-4 pb-10 flex flex-col items-center">
+            <div className="w-full max-w-sm animate-in slide-in-from-bottom duration-300">
+              
+              {/* Bloque de Acciones */}
+              <div className={cn(
+                "rounded-[2.5rem] overflow-hidden mb-3 border shadow-2xl",
+                isDark ? "bg-[#1A120B] border-[#F5EBDC]/10" : "bg-[#FDF8F3] border-[#4E342E]/10"
+              )}>
+                <button
+                  onClick={() => {
+                    const producto = listaProductos.find(p => p.id === menuAbierto);
+                    setMenuAbierto(null);
+                    navigate('/admin/editar-producto', { state: { producto } });
+                  }}
+                  className={cn(
+                    "w-full py-6 text-center font-bold flex items-center justify-center gap-3 active:bg-black/10 transition-colors border-b",
+                    isDark ? "text-[#F5EBDC] border-[#F5EBDC]/5" : "text-[#4E342E] border-[#4E342E]/5"
+                  )}
                 >
-                    <button 
-                      style={{ color: isDark ? '#F5EBDC' : '#FFFFFF' }}
-                      className="w-full p-4 text-center font-bold border-b border-white/10 hover:bg-white/5 transition-colors"
-                    >
-                        Editar producto
-                    </button>
-                    <button 
-                        onClick={() => {
-                            setIdEliminar(menuAbierto);
-                            setMenuAbierto(null);
-                        }}
-                        className="w-full p-4 text-center font-bold text-red-400 hover:bg-white/5 transition-colors"
-                    >
-                        Eliminar
-                    </button>
-                </div>
-                <button 
-                  onClick={() => setMenuAbierto(null)} 
-                  className="w-full p-4 bg-[#8D6E63] text-white font-bold rounded-2xl shadow-lg"
-                >
-                    Cancelar
+                  <Edit3 size={20} />
+                  Editar producto
                 </button>
+                
+                <button
+                  onClick={() => {
+                    setIdEliminar(menuAbierto);
+                    setMenuAbierto(null);
+                  }}
+                  className="w-full py-6 text-center font-bold text-red-500 flex items-center justify-center gap-3 active:bg-red-500/10 transition-colors"
+                >
+                  <Trash2 size={20} />
+                  Eliminar
+                </button>
+              </div>
+
+              {/* Botón Cancelar */}
+              <button
+                onClick={() => setMenuAbierto(null)}
+                className="w-full py-5 bg-[#8D6E63] text-white font-bold rounded-3xl shadow-lg active:scale-95 transition-transform"
+              >
+                Cancelar
+              </button>
             </div>
+          </div>
         </>
       )}
 
-      {/* Popup Confirmación */}
+
+      {/* Popup Confirmación Eliminación */}
       {idEliminar !== null && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-            <div 
-              style={{ backgroundColor: isDark ? '#2C221C' : '#A1887F' }}
-              className="w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden border border-white/10"
+            <div
+              className={cn(
+                "w-full max-w-sm rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/10",
+                isDark ? "bg-[#2C221C]" : "bg-white"
+              )}
             >
-                <div className="p-8 text-center">
-                    <h3 className="text-white text-lg font-bold">¿Eliminar este producto?</h3>
+                <div className="p-10 text-center">
+                    <h3 className={cn(
+                      "text-xl font-bold",
+                      isDark ? "text-[#F5EBDC]" : "text-[#4E342E]"
+                    )}>
+                      ¿Eliminar este producto?
+                    </h3>
+                    <p className="text-sm opacity-60 mt-2">Esta acción no se puede deshacer.</p>
                 </div>
-                <div className="flex border-t border-white/10">
-                    <button 
+                <div className="flex border-t border-black/5 dark:border-white/10">
+                    <button
                         onClick={() => {
                             if(eliminarProducto) eliminarProducto(idEliminar);
                             setIdEliminar(null);
                         }}
-                        className="flex-1 p-4 text-red-200 font-bold hover:bg-red-500/20 border-r border-white/10"
+                        className="flex-1 p-5 text-red-500 font-bold hover:bg-red-500/10 border-r border-black/5 dark:border-white/10"
                     >
                         Eliminar
                     </button>
-                    <button onClick={() => setIdEliminar(null)} className="flex-1 p-4 text-white font-bold hover:bg-white/10">
+                    <button 
+                      onClick={() => setIdEliminar(null)} 
+                      className={cn(
+                        "flex-1 p-5 font-bold hover:bg-black/5 transition-colors",
+                        isDark ? "text-[#F5EBDC]" : "text-[#4E342E]"
+                      )}
+                    >
                         Cancelar
                     </button>
                 </div>

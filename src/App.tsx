@@ -20,6 +20,7 @@ import { EmpleadosProvider } from './context/EmpleadosContext';
 import EstadoPedidos from './pages/empleado/EstadoPedidos';
 import ConfiguracionEmpleado from './pages/empleado/ConfiguracionEmpleado';
 import MenuAdmin from './pages/admin/MenuAdmin';
+import EditarProducto from './pages/admin/EditarProducto';
 
 function App() {
   return (
@@ -50,8 +51,9 @@ function App() {
                   <Route path="menu-gestion" element={<GestionMenu />} />
                   <Route path="nuevo-empleado" element={<NuevoEmpleado />} />
                   <Route path="nuevo-producto" element={<NuevoProducto />} />
-                  <Route path="ajustes" element={<AjustesAdmin />} />
+                  <Route path="/admin/ajustes" element={<AjustesAdmin />} />
                   <Route path="/admin/estado-pedidos" element={<EstadoPedidos />} />
+                  <Route path="/admin/editar-producto" element={<EditarProducto />} />
                 </Route>
 
                 {/* Ruta del empleado de la cafetería */}
@@ -59,7 +61,7 @@ function App() {
 
                 {/* Detalle (Sin layout) */}
                 <Route path="/producto/:id" element={<DetalleProducto />} />
-                <Route path="/empleado" element={<EstadoPedidos />} />
+                <Route path="/empleado/estado" element={<EstadoPedidos />} />
                 <Route path="/empleado/configuracion" element={<ConfiguracionEmpleado />} />
               </Routes>
             </BrowserRouter>
