@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useProductos } from '../context/ProductosContext'; // <--- IMPORTAR CONTEXTO
+import { useProductos } from '../context/ProductosContext'; 
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 

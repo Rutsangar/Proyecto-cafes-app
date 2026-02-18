@@ -8,12 +8,12 @@ type EstadoPedido = 'ACEPTADO' | 'EN PREPARACIÓN' | 'FINALIZADO';
 
 interface Pedido {
     id: string;
-    cliente: string; 
+    cliente: string;
     estado: EstadoPedido;
     items: { nombre: string; precio: number; img: string }[];
 }
 
-// --- CAMBIO AQUÍ: Todos inicializados en 'ACEPTADO' ---
+// CAMBIO AQUÍ: Todos inicializados en 'ACEPTADO' 
 const pedidosIniciales: Pedido[] = [
     {
         id: "1234",
@@ -32,12 +32,6 @@ const pedidosIniciales: Pedido[] = [
         cliente: "Ana",
         estado: "ACEPTADO",
         items: [{ nombre: "Café", precio: 1.10, img: "" }]
-    },
-    {
-        id: "3456",
-        cliente: "Luis",
-        estado: "ACEPTADO",
-        items: [{ nombre: "Refresco", precio: 1.20, img: "" }]
     }
 ];
 
@@ -45,7 +39,7 @@ export default function EstadoPedidos() {
     const navigate = useNavigate();
     const { isDark } = useTheme();
     const [pedidos, setPedidos] = useState<Pedido[]>(pedidosIniciales);
-   
+
     const location = useLocation();
     const isAdminPath = location.pathname.includes('/admin');
 
@@ -69,11 +63,11 @@ export default function EstadoPedidos() {
     return (
         <div className={cn(
             "p-6 min-h-screen pb-20 transition-colors duration-300 relative",
-            isDark ? "bg-[#1A120B]" : "bg-[#F3EFE0]" 
+            isDark ? "bg-[#1A120B]" : "bg-[#F3EFE0]"
         )}>
 
             {/* BOTÓN RUEDECITA (Ajustes) */}
-            <button 
+            <button
                 onClick={() => navigate('/empleado/configuracion')}
                 className={cn(
                     "absolute top-8 right-6 p-2 rounded-full shadow-sm transition-all active:scale-90 z-20",
@@ -96,7 +90,7 @@ export default function EstadoPedidos() {
                         <ChevronLeft size={24} />
                     </button>
                 )}
-               
+
                 <h1 className={cn(
                     "text-2xl font-bold text-center flex-1",
                     textMain
@@ -105,7 +99,7 @@ export default function EstadoPedidos() {
                 </h1>
             </div>
 
-            {/* GRID DE PEDIDOS COMPACTOS */}
+            {/* PEDIDOS COMPACTOS */}
             <div className="grid grid-cols-1 gap-3">
                 {pedidos.map((pedido, index) => (
                     <div
@@ -144,7 +138,7 @@ export default function EstadoPedidos() {
                                 disabled={pedido.estado === 'EN PREPARACIÓN' || pedido.estado === 'FINALIZADO'}
                                 className={cn(
                                     "flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95",
-                                    pedido.estado === 'EN PREPARACIÓN' 
+                                    pedido.estado === 'EN PREPARACIÓN'
                                         ? "bg-orange-500 text-white shadow-md opacity-100" // Estado activo
                                         : pedido.estado === 'FINALIZADO'
                                             ? "bg-gray-200 dark:bg-white/5 text-gray-400 opacity-50 cursor-not-allowed" // Deshabilitado

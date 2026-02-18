@@ -130,7 +130,7 @@ export default function NuevoProducto() {
         </div>
 
 
-        {/* CATEGORÍA (Custom Select) */}
+        {/* CATEGORÍA */}
         <div className="relative z-20">
           <label className="block text-sm font-bold mb-2 ml-1" style={{ color: colores.label }}>Categoría</label>
           
@@ -228,7 +228,6 @@ export default function NuevoProducto() {
           </div>
         )}
 
-
         {/* ALÉRGENOS */}
         <div>
            <label className="block text-sm font-bold mb-2 ml-1" style={{ color: colores.label }}>Alérgenos</label>
@@ -253,7 +252,6 @@ export default function NuevoProducto() {
            </div>
         </div>
       </div>
-
 
       <div className="mt-10 mb-6 shrink-0">
         <button

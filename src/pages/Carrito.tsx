@@ -22,7 +22,6 @@ export default function Carrito() {
             Carrito
         </h1>
 
-
         <div className="flex-1 overflow-y-auto no-scrollbar">
           {items.length === 0 ? (
             <div className="text-center text-gray-400 mt-20 flex flex-col items-center gap-4">
@@ -33,7 +32,6 @@ export default function Carrito() {
             items.map((item, index) => {
               const producto = productos.find(p => p.id === item.id);
               if (!producto) return null;
-
 
               return (
                 <div
@@ -75,7 +73,6 @@ export default function Carrito() {
           )}
         </div>
 
-
         {items.length > 0 && (
           <div className="mt-auto pt-6 border-t border-cafe-text/10 dark:border-white/10">
             <div className="flex justify-between items-center mb-6 px-2">
@@ -83,9 +80,8 @@ export default function Carrito() {
               <span className="font-black text-2xl text-cafe-primary">{total.toFixed(2)}€</span>
             </div>
 
-
             <div className="flex gap-4">
-              {/* Botón Cancelar (Marrón Oscuro) */}
+              {/* Botón Cancelar */}
               <UiButton
                 onClick={limpiarCarrito}
                 className="bg-cafe-primary hover:brightness-90 flex-1"
@@ -94,7 +90,7 @@ export default function Carrito() {
                 Cancelar
               </UiButton>
              
-              {/* Botón Pagar (AHORA BEIGE / CAFÉ CON LECHE) */}
+              {/* Botón Pagar */}
               <Link to="/pago" className="flex-1 block">
                   <UiButton
                     className="w-full hover:brightness-95 shadow-sm"

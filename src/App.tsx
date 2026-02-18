@@ -6,12 +6,12 @@ import DetalleProducto from './pages/DetalleProducto';
 import Carrito from './pages/Carrito';
 import Ajustes from './pages/Ajustes';
 import Layout from './components/Layout';
-import AdminLayout from './components/AdminLayout'; // <--- IMPORTAR
-import GestionPersonal from './pages/admin/GestionPersonal'; // <--- IMPORTAR
+import AdminLayout from './components/AdminLayout'; 
+import GestionPersonal from './pages/admin/GestionPersonal'; 
 import { CarritoProvider } from './context/CarritoContext';
 import { ThemeProvider } from './context/ThemeContext';
-import AjustesAdmin from './pages/admin/AjustesAdmin'; // <--- IMPORTAR
-import NuevoEmpleado from './pages/admin/NuevoEmpleado'; // <--- IMPORTAR
+import AjustesAdmin from './pages/admin/AjustesAdmin'; 
+import NuevoEmpleado from './pages/admin/NuevoEmpleado'; 
 import GestionMenu from './pages/admin/GestionMenu';
 import NuevoProducto from './pages/admin/NuevoProducto';
 import PasarelaPago from './pages/PasarelaPago';
@@ -43,8 +43,6 @@ function App() {
                   <Route path="/pago" element={<PasarelaPago />} />
                 </Route>
 
-
-
                 {/* Rutas Admin (Layout Admin) */}
                 <Route path="/admin" element={<AdminLayout />}>
                   <Route index element={<MenuAdmin />} />
@@ -58,8 +56,6 @@ function App() {
                 </Route>
 
                 {/* Ruta del empleado de la cafetería */}
-
-
                 {/* Detalle (Sin layout) */}
                 <Route path="/producto/:id" element={<DetalleProducto />} />
                 <Route path="/empleado" element={<EstadoPedidos />} />

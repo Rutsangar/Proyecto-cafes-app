@@ -64,14 +64,13 @@ export default function DetalleProducto() {
   };
 
 
-  // --- CÁLCULO DEL PRECIO REAL (Para el botón de añadir) ---
-  // Esta variable 'precioBaseCalculado' cambia según el tamaño, PERO solo la usaremos para el total final.
+  // --- CÁLCULO DEL PRECIO REAL ---
   let precioBaseCalculado = producto.precio;
   
   if (producto.categoria === 'Bocadillo') {
       if (tamanoSeleccionado === 'Entero') precioBaseCalculado = precioEnteroReal;
       else if (tamanoSeleccionado === 'Medio') precioBaseCalculado = precioMedioReal;
-      else precioBaseCalculado = precioEnteroReal; // Por defecto para calcular total
+      else precioBaseCalculado = precioEnteroReal;
   }
 
 
@@ -80,7 +79,6 @@ export default function DetalleProducto() {
   }, 0);
 
 
-  // Precio FINAL (Suma de tamaño elegido + extras) -> Va al botón
   const precioTotal = precioBaseCalculado + precioTotalExtras;
 
 
@@ -124,9 +122,9 @@ export default function DetalleProducto() {
 
 
   return (
-    <div className="min-h-screen bg-cafe-bg pb-6 relative w-full max-w-[600px] mx-auto shadow-2xl transition-colors duration-300">
+    <div className="h-screen overflow-y-auto overscroll-none bg-cafe-bg relative w-full max-w-[600px] mx-auto shadow-2xl transition-colors duration-300">
      
-      <div className="relative h-72 w-full">
+      <div className="relative h-72 w-full shrink-0">
         <img src={producto.img} alt={producto.nombre} className="w-full h-full object-cover" />
         <Link to="/menu" className={cn(
           "absolute top-4 left-4 p-2.5 rounded-full shadow-sm backdrop-blur-sm transition-all active:scale-95",
@@ -137,13 +135,12 @@ export default function DetalleProducto() {
       </div>
 
 
-      <div className="p-6 -mt-8 bg-cafe-bg rounded-t-[2rem] relative z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] min-h-[50vh] transition-colors duration-300">
+      {/* CAMBIO AQUÍ: Se ha eliminado 'pb-4' de la lista de clases */}
+      <div className="p-6 -mt-8 bg-cafe-bg rounded-t-[2rem] relative z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] min-h-full transition-colors duration-300">
        
         <div className="flex justify-between items-start gap-4 mb-2">
             <h1 className="text-2xl font-bold text-cafe-text leading-tight">{producto.nombre}</h1>
             <span className="text-2xl font-black text-cafe-primary whitespace-nowrap">
-                 {/* CAMBIO AQUÍ: Usamos producto.precio directamente. 
-                     Este es el precio fijo de la base de datos, no cambia con el tamaño. */}
                  {producto.precio.toFixed(2)}€
             </span>
         </div>
@@ -214,8 +211,7 @@ export default function DetalleProducto() {
             </div>
         </div>
 
-
-        <div className="mt-10">
+        <div className="mt-8">
             <UiButton
               onClick={handleAnadir}
               disabled={!esValido}
@@ -231,8 +227,6 @@ export default function DetalleProducto() {
                         : 'Selecciona extras')
                     : 'Añadir'}
                 </span>
-               
-                {/* Aquí seguimos mostrando el precio TOTAL REAL (base elegida + extras) */}
                 <span>{precioTotal.toFixed(2)}€</span>
             </UiButton>
         </div>

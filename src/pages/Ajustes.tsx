@@ -8,13 +8,13 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
   const navigate = useNavigate();
   const { isDark, setIsDark } = useTheme();
 
-  const [clave, setClave] = useState(''); 
+  const [clave, setClave] = useState('');
   const [mostrarClave, setMostrarClave] = useState(false);
   const [turno, setTurno] = useState(usuarioInicial?.turno || 'Mañana');
-  
+
   // Nuevo estado para controlar el desplegable visual
   const [mostrarMenuTurnos, setMostrarMenuTurnos] = useState(false);
-  
+
   const opcionesTurno = ['Mañana', 'Tarde', 'Noche'];
 
   return (
@@ -23,17 +23,8 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
       isDark ? "bg-[#1A120B]" : "bg-[#F3EFE0]"
     )}>
       <header className="flex items-center gap-4 mb-8">
-        <button 
-          onClick={() => navigate(-1)} 
-          className={cn(
-            "p-2 rounded-full shadow-sm active:scale-95 transition-all",
-            isDark ? "bg-[#2C221C] text-[#F5EBDC]" : "bg-white text-[#4E342E]"
-          )}
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <h1 className={cn("text-2xl font-bold", isDark ? "text-[#F5EBDC]" : "text-[#4E342E]")}>
-          Mi Perfil
+        <h1 className="text-3xl font-bold text-center text-cafe-text mb-8 mt-2">
+          Mi perfil
         </h1>
       </header>
 
@@ -57,17 +48,17 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
         {/* INFO EDITABLE */}
         {/* NOTA: He quitado 'overflow-hidden' para que el menú desplegable pueda salirse de la caja */}
         <div className={cn(
-          "rounded-[2.5rem] shadow-sm relative z-20", 
+          "rounded-[2.5rem] shadow-sm relative z-20",
           isDark ? "bg-[#2C221C]" : "bg-white"
         )}>
-          
+
           {/* Input Clave */}
           <div className="p-5 flex items-center gap-4 border-b border-black/5 dark:border-white/5">
             <Key className="text-amber-500 shrink-0" size={20} />
             <div className="flex-1">
               <p className="text-[10px] uppercase tracking-wider opacity-50 font-bold">Clave Docente / ID</p>
               <div className="flex items-center gap-2">
-                <input 
+                <input
                   type={mostrarClave ? "text" : "password"}
                   value={clave}
                   placeholder="Introduce tu clave"
@@ -89,9 +80,9 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
             <Clock className="text-green-500 shrink-0" size={20} />
             <div className="flex-1 relative">
               <p className="text-[10px] uppercase tracking-wider opacity-50 font-bold mb-1">Turno asignado</p>
-              
+
               {/* Botón Trigger (Lo que se ve siempre) */}
-              <button 
+              <button
                 onClick={() => setMostrarMenuTurnos(!mostrarMenuTurnos)}
                 className={cn(
                   "flex items-center justify-between w-full font-bold outline-none",
@@ -99,12 +90,12 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
                 )}
               >
                 <span>{turno}</span>
-                <ChevronDown 
-                  size={18} 
+                <ChevronDown
+                  size={18}
                   className={cn(
-                    "transition-transform duration-300 opacity-50", 
+                    "transition-transform duration-300 opacity-50",
                     mostrarMenuTurnos ? "rotate-180" : ""
-                  )} 
+                  )}
                 />
               </button>
 
@@ -112,8 +103,8 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
               {mostrarMenuTurnos && (
                 <div className={cn(
                   "absolute top-full left-0 right-0 mt-2 rounded-2xl shadow-xl border z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200",
-                  isDark 
-                    ? "bg-[#1A120B] border-[#F5EBDC]/10" 
+                  isDark
+                    ? "bg-[#1A120B] border-[#F5EBDC]/10"
                     : "bg-[#FFFFFF] border-[#4E342E]/10"
                 )}>
                   {opcionesTurno.map((opcion) => (
@@ -125,8 +116,8 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
                       }}
                       className={cn(
                         "w-full text-left px-4 py-3 text-sm font-bold flex items-center justify-between transition-colors",
-                        isDark 
-                          ? "hover:bg-[#F5EBDC]/10 text-[#F5EBDC]" 
+                        isDark
+                          ? "hover:bg-[#F5EBDC]/10 text-[#F5EBDC]"
                           : "hover:bg-[#4E342E]/5 text-[#4E342E]",
                         turno === opcion && (isDark ? "bg-[#F5EBDC]/5" : "bg-[#4E342E]/5")
                       )}
@@ -142,9 +133,9 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
         </div>
 
         {/* SWITCH MODO OSCURO */}
-        <button 
+        <button
           type="button"
-          onClick={() => setIsDark(!isDark)} 
+          onClick={() => setIsDark(!isDark)}
           className={cn(
             "w-full p-6 rounded-[2.5rem] flex items-center justify-between shadow-sm active:scale-[0.98] transition-all relative z-10",
             isDark ? "bg-[#2C221C]" : "bg-white"
@@ -156,7 +147,7 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
               Modo Oscuro
             </span>
           </div>
-          
+
           <div className="relative w-14 h-7 pointer-events-none">
             <div className={cn(
               "w-full h-full rounded-full transition-colors duration-300",
@@ -170,7 +161,7 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
         </button>
 
         {/* BOTÓN CERRAR SESIÓN */}
-        <button 
+        <button
           onClick={() => navigate('/')}
           className={cn(
             "w-full p-6 rounded-[2.5rem] flex items-center gap-4 shadow-sm active:scale-95 transition-all text-left relative z-10",
