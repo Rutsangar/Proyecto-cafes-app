@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { ChevronLeft, CheckCircle2, Check, Plus, Minus, ShoppingBag } from 'lucide-react';
+import { ChevronLeft, Check, Plus, Minus, ShoppingBag, ChevronDown, CheckCircle2 } from 'lucide-react';
 import { useProductos } from '../../context/ProductosContext';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -19,20 +19,34 @@ export default function EditarProducto() {
     return null;
   }
 
-  const [formData, setFormData] = useState(productoAEditar);
+  // Inicializamos el estado asegurándonos de que existan los campos de precio
+  const [formData, setFormData] = useState({
+    ...productoAEditar,
+    precioEntero: productoAEditar.precioEntero || 0,
+    precioMedio: productoAEditar.precioMedio || 0
+  });
+
   const [mostrarModal, setMostrarModal] = useState(false);
+  
+  // Nuevo estado para controlar el menú visual
+  const [mostrarMenuCategoria, setMostrarMenuCategoria] = useState(false);
 
   const listaCategorias = ['Bocadillo', 'Bebidas frías', 'Bebida caliente', 'Bollería', 'Pack/Menú'];
   const listaAlergenos = ['Gluten', 'Crustáceos', 'Huevo', 'Pescado', 'Cacahuetes', 'Soja', 'Leche', 'Frutos con cáscara', 'Apio', 'Mostaza', 'Granos de sésamo', 'Dióxido de azufre y sulfitos', 'Altramuces', 'Moluscos'];
   const listaIngredientes = ['Chorizo', 'Salchichón', 'Queso', 'Jamón York', 'Pechuga de pavo'];
-  const listaTamanos = ['Entero', 'Medio'];
 
-  const esFormularioValido = formData.nombre.trim() !== '' && formData.precio > 0;
+  // Validación
+  const esFormularioValido = formData.nombre.trim() !== '' && (
+    formData.categoria === 'Bocadillo' 
+      ? (formData.precioEntero > 0 && formData.precioMedio > 0)
+      : formData.precio > 0
+  );
 
-  const ajustarPrecio = (cantidad: number) => {
+  // --- LÓGICA DE PRECIOS ---
+  const ajustarPrecio = (campo: 'precio' | 'precioEntero' | 'precioMedio', cantidad: number) => {
     setFormData((prev: any) => ({
       ...prev,
-      precio: Math.max(0, parseFloat((prev.precio + cantidad).toFixed(2)))
+      [campo]: Math.max(0, parseFloat(((prev[campo] || 0) + cantidad).toFixed(2)))
     }));
   };
 
@@ -49,27 +63,46 @@ export default function EditarProducto() {
 
   const handleGuardar = () => {
     if (esFormularioValido) {
-      actualizarProducto({
+      actualizarProducto(formData.id, {
         ...formData,
+        // Si es bocadillo guardamos sus precios específicos, si no, usamos el genérico
+        precio: formData.categoria === 'Bocadillo' ? formData.precioEntero : formData.precio, 
+        precioEntero: formData.categoria === 'Bocadillo' ? formData.precioEntero : undefined,
+        precioMedio: formData.categoria === 'Bocadillo' ? formData.precioMedio : undefined,
         ingredientes: formData.categoria === 'Bocadillo' ? formData.ingredientes : [],
-        tamano: formData.categoria === 'Bocadillo' ? formData.tamano : undefined,
       });
       setMostrarModal(true);
     }
   };
 
   const colores = {
-    fondo: isDark ? '#1A120B' : '#FDF8F3',
+    fondo: isDark ? '#1A120B' : '#F3EFE0',
     input: isDark ? '#2C1F14' : '#FFFFFF',
     borde: isDark ? '#423224' : '#E5E7EB',
     texto: isDark ? '#F5EBDC' : '#4B3F35',
     label: isDark ? '#D4B996' : '#6F4E37'
   };
 
+  // Componente Reutilizable para el Selector de Precio (Local)
+  const SelectorPrecio = ({ label, valor, onChange }: { label: string, valor: number, onChange: (n: number) => void }) => (
+    <div className="mb-4">
+      <label className="block text-sm font-bold mb-2 ml-1" style={{ color: colores.label }}>{label}</label>
+      <div className="flex items-center justify-between p-2 rounded-2xl border" style={{ backgroundColor: colores.input, borderColor: colores.borde }}>
+        <button onClick={() => onChange(-0.50)} className="p-4 rounded-xl active:scale-90 transition-transform" style={{ backgroundColor: isDark ? '#1A120B' : '#F3F4F6', color: colores.texto }}>
+          <Minus size={24} />
+        </button>
+        <span className="text-3xl font-black" style={{ color: colores.texto }}>{valor.toFixed(2)}€</span>
+        <button onClick={() => onChange(0.50)} className="p-4 rounded-xl active:scale-90 transition-transform" style={{ backgroundColor: isDark ? '#1A120B' : '#F3F4F6', color: colores.texto }}>
+          <Plus size={24} />
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen p-6 pb-32 flex flex-col transition-all duration-300" style={{ backgroundColor: colores.fondo }}>
       
-      {/* MODAL DE ÉXITO (Diseño Moderno) */}
+      {/* MODAL DE ÉXITO */}
       {mostrarModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm">
           <div className="bg-white rounded-[2.5rem] p-8 w-full max-w-xs flex flex-col items-center text-center shadow-2xl animate-in zoom-in-90 duration-300">
@@ -108,58 +141,96 @@ export default function EditarProducto() {
           />
         </div>
 
-        {/* PRECIO */}
-        <div>
-          <label className="block text-sm font-bold mb-2 ml-1" style={{ color: colores.label }}>Precio (€)</label>
-          <div className="flex items-center justify-between p-2 rounded-2xl border" style={{ backgroundColor: colores.input, borderColor: colores.borde }}>
-            <button onClick={() => ajustarPrecio(-0.50)} className="p-4 rounded-xl active:scale-90 transition-transform" style={{ backgroundColor: isDark ? '#1A120B' : '#F3F4F6', color: colores.texto }}>
-              <Minus size={24} />
-            </button>
-            <span className="text-3xl font-black" style={{ color: colores.texto }}>{formData.precio.toFixed(2)}€</span>
-            <button onClick={() => ajustarPrecio(0.50)} className="p-4 rounded-xl active:scale-90 transition-transform" style={{ backgroundColor: isDark ? '#1A120B' : '#F3F4F6', color: colores.texto }}>
-              <Plus size={24} />
-            </button>
+        {/* PRECIOS DINÁMICOS */}
+        {formData.categoria === 'Bocadillo' ? (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+             <SelectorPrecio 
+                label="Precio Entero (€)" 
+                valor={formData.precioEntero} 
+                onChange={(n) => ajustarPrecio('precioEntero', n)} 
+             />
+             <SelectorPrecio 
+                label="Precio Medio (€)" 
+                valor={formData.precioMedio} 
+                onChange={(n) => ajustarPrecio('precioMedio', n)} 
+             />
           </div>
-        </div>
+        ) : (
+          <SelectorPrecio 
+             label="Precio (€)" 
+             valor={formData.precio} 
+             onChange={(n) => ajustarPrecio('precio', n)} 
+          />
+        )}
 
-        {/* CATEGORÍA */}
-        <div>
+        {/* CATEGORÍA (Custom Select) */}
+        <div className="relative z-20">
           <label className="block text-sm font-bold mb-2 ml-1" style={{ color: colores.label }}>Categoría</label>
-          <div className="relative">
-            <select
-              value={formData.categoria}
-              onChange={(e) => setFormData({...formData, categoria: e.target.value})}
-              style={{ backgroundColor: colores.input, borderColor: colores.borde, color: colores.texto }}
-              className="w-full border rounded-xl px-4 py-4 outline-none appearance-none"
+          
+          {/* Botón Trigger */}
+          <button
+            onClick={() => setMostrarMenuCategoria(!mostrarMenuCategoria)}
+            className="w-full flex items-center justify-between border rounded-xl px-4 py-4 outline-none transition-all"
+            style={{ backgroundColor: colores.input, borderColor: colores.borde, color: colores.texto }}
+          >
+            <span className="font-medium">{formData.categoria}</span>
+            <ChevronDown 
+              size={20} 
+              style={{ color: colores.label }} 
+              className={`transition-transform duration-300 ${mostrarMenuCategoria ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {/* Menú Desplegable */}
+          {mostrarMenuCategoria && (
+            <div 
+              className="absolute top-full left-0 right-0 mt-2 rounded-2xl shadow-xl border z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200"
+              style={{ backgroundColor: colores.input, borderColor: colores.borde }}
             >
-              {listaCategorias.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+              {listaCategorias.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setFormData({...formData, categoria: cat});
+                    setMostrarMenuCategoria(false);
+                  }}
+                  className="w-full text-left px-4 py-3 text-sm font-bold flex items-center justify-between transition-colors hover:brightness-95 dark:hover:brightness-110"
+                  style={{ 
+                    color: colores.texto,
+                    backgroundColor: formData.categoria === cat ? (isDark ? 'rgba(245, 235, 220, 0.05)' : 'rgba(78, 52, 46, 0.05)') : 'transparent'
+                  }}
+                >
+                  {cat}
+                  {formData.categoria === cat && <Check size={16} className="text-green-500" />}
+                </button>
               ))}
-            </select>
-            <ChevronLeft size={20} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none -rotate-90" style={{ color: colores.label }} />
-          </div>
+            </div>
+          )}
         </div>
 
-        {/* BOCADILLO EXTRA */}
+        {/* BOCADILLO EXTRA: INGREDIENTES */}
         {formData.categoria === 'Bocadillo' && (
           <div className="p-5 rounded-2xl border space-y-6" style={{ backgroundColor: isDark ? 'rgba(111, 78, 55, 0.1)' : 'rgba(111, 78, 55, 0.05)', borderColor: colores.borde }}>
             <div>
-               <label className="block text-sm font-bold mb-3" style={{ color: colores.label }}>Tamaño</label>
-               <div className="flex gap-3">
-                  {listaTamanos.map(tam => (
-                    <button
-                      key={tam}
-                      onClick={() => setFormData((prev:any) => ({ ...prev, tamano: tam }))}
-                      style={{
-                        backgroundColor: formData.tamano === tam ? '#6F4E37' : colores.fondo,
-                        borderColor: formData.tamano === tam ? '#6F4E37' : colores.borde,
-                        color: formData.tamano === tam ? '#FFFFFF' : colores.texto
-                      }}
-                      className="flex-1 py-3 rounded-xl text-sm font-bold border"
-                    >
-                      {tam}
-                    </button>
-                  ))}
+               <label className="block text-sm font-bold mb-3" style={{ color: colores.label }}>Ingredientes principales</label>
+               <div className="flex flex-wrap gap-2">
+                  {listaIngredientes.map(ing => {
+                    const isSelected = formData.ingredientes?.includes(ing);
+                    return (
+                      <button
+                        key={ing}
+                        onClick={() => toggleSelection('ingredientes', ing)}
+                        style={{
+                          backgroundColor: isSelected ? '#6F4E37' : colores.fondo,
+                          borderColor: isSelected ? '#6F4E37' : colores.borde,
+                          color: isSelected ? '#FFFFFF' : colores.texto
+                        }}
+                        className="px-4 py-2 rounded-full text-xs font-bold transition-all border flex items-center gap-2 shadow-sm"
+                      >
+                        {isSelected && <Check size={14} />} {ing}
+                      </button>
+                    );
+                  })}
                </div>
             </div>
           </div>

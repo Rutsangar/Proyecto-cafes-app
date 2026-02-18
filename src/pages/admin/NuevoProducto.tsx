@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ChevronLeft, CheckCircle2, Check, Plus, Minus } from 'lucide-react';
+import { ChevronLeft, CheckCircle2, Check, Plus, Minus, ChevronDown } from 'lucide-react';
 import { useProductos } from '../../context/ProductosContext';
 import { useTheme } from '../../context/ThemeContext';
 
@@ -15,14 +15,16 @@ export default function NuevoProducto() {
     nombre: '',
     categoria: 'Bocadillo',
     alergenos: [] as string[],
-    precio: 0.00, // Precio base para otras categorías
-    precioEntero: 0.00, // Específico para Bocadillo
-    precioMedio: 0.00,   // Específico para Bocadillo
+    precio: 0.00, 
+    precioEntero: 0.00, 
+    precioMedio: 0.00,   
     ingredientes: [] as string[]
   });
 
 
   const [mostrandoExito, setMostrandoExito] = useState(false);
+  // Nuevo estado para controlar el menú visual
+  const [mostrarMenuCategoria, setMostrarMenuCategoria] = useState(false);
 
 
   const listaCategorias = ['Bocadillo', 'Bebidas frías', 'Bebida caliente', 'Bollería', 'Pack/Menú'];
@@ -30,7 +32,7 @@ export default function NuevoProducto() {
   const listaIngredientes = ['Chorizo', 'Salchichón', 'Queso', 'Jamón York', 'Pechuga de pavo'];
 
 
-  // Validación: Si es bocadillo requiere ambos precios > 0. Si no, solo el precio base.
+  // Validación
   const esFormularioValido = formData.nombre.trim() !== '' && (
     formData.categoria === 'Bocadillo'
       ? (formData.precioEntero > 0 && formData.precioMedio > 0)
@@ -62,7 +64,6 @@ export default function NuevoProducto() {
     if (esFormularioValido) {
       const datosFinales = {
         ...formData,
-        // Si no es bocadillo, limpiamos los precios de tamaño para evitar basura en la DB
         precioEntero: formData.categoria === 'Bocadillo' ? formData.precioEntero : undefined,
         precioMedio: formData.categoria === 'Bocadillo' ? formData.precioMedio : undefined,
         ingredientes: formData.categoria === 'Bocadillo' ? formData.ingredientes : [],
@@ -86,7 +87,7 @@ export default function NuevoProducto() {
 
 
   const colores = {
-    fondo: isDark ? '#1A120B' : '#FDF8F3',
+    fondo: isDark ? '#1A120B' : '#F3EFE0',
     input: isDark ? '#2C1F14' : '#FFFFFF',
     borde: isDark ? '#423224' : '#E5E7EB',
     texto: isDark ? '#F5EBDC' : '#4B3F35',
@@ -129,28 +130,55 @@ export default function NuevoProducto() {
         </div>
 
 
-        {/* CATEGORÍA */}
-        <div>
+        {/* CATEGORÍA (Custom Select) */}
+        <div className="relative z-20">
           <label className="block text-sm font-bold mb-2 ml-1" style={{ color: colores.label }}>Categoría</label>
-          <div className="relative">
-            <select
-              value={formData.categoria}
-              onChange={(e) => setFormData({...formData, categoria: e.target.value})}
-              style={{ backgroundColor: colores.input, borderColor: colores.borde, color: colores.texto }}
-              className="w-full border rounded-xl px-4 py-4 outline-none appearance-none"
+          
+          {/* Botón Trigger */}
+          <button
+            onClick={() => setMostrarMenuCategoria(!mostrarMenuCategoria)}
+            className="w-full flex items-center justify-between border rounded-xl px-4 py-4 outline-none transition-all"
+            style={{ backgroundColor: colores.input, borderColor: colores.borde, color: colores.texto }}
+          >
+            <span className="font-medium">{formData.categoria}</span>
+            <ChevronDown 
+              size={20} 
+              style={{ color: colores.label }} 
+              className={`transition-transform duration-300 ${mostrarMenuCategoria ? 'rotate-180' : ''}`}
+            />
+          </button>
+
+          {/* Menú Desplegable */}
+          {mostrarMenuCategoria && (
+            <div 
+              className="absolute top-full left-0 right-0 mt-2 rounded-2xl shadow-xl border z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200"
+              style={{ backgroundColor: colores.input, borderColor: colores.borde }}
             >
-              {listaCategorias.map(cat => (
-                <option key={cat} value={cat} style={{ backgroundColor: colores.input, color: colores.texto }}>{cat}</option>
+              {listaCategorias.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setFormData({...formData, categoria: cat});
+                    setMostrarMenuCategoria(false);
+                  }}
+                  className="w-full text-left px-4 py-3 text-sm font-bold flex items-center justify-between transition-colors hover:brightness-95 dark:hover:brightness-110"
+                  style={{ 
+                    color: colores.texto,
+                    backgroundColor: formData.categoria === cat ? (isDark ? 'rgba(245, 235, 220, 0.05)' : 'rgba(78, 52, 46, 0.05)') : 'transparent'
+                  }}
+                >
+                  {cat}
+                  {formData.categoria === cat && <Check size={16} className="text-green-500" />}
+                </button>
               ))}
-            </select>
-            <ChevronLeft size={20} className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none -rotate-90" style={{ color: colores.label }} />
-          </div>
+            </div>
+          )}
         </div>
 
 
         {/* PRECIOS DINÁMICOS */}
         {formData.categoria === 'Bocadillo' ? (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
             <SelectorPrecio
               label="Precio Entero (€)"
               valor={formData.precioEntero}

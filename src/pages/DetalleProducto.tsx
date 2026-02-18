@@ -47,7 +47,7 @@ export default function DetalleProducto() {
     : ['Sin extras'];
 
 
-  // Lógica de precios
+  // Lógica de precios del producto
   const precioEnteroReal = producto.precioEntero || producto.precio;
   const precioMedioReal = producto.precioMedio || (producto.precio / 2);
 
@@ -64,12 +64,14 @@ export default function DetalleProducto() {
   };
 
 
-  // --- CAMBIO AQUÍ: Precio base por defecto ---
-  let precioBase = producto.precio;
+  // --- CÁLCULO DEL PRECIO REAL (Para el botón de añadir) ---
+  // Esta variable 'precioBaseCalculado' cambia según el tamaño, PERO solo la usaremos para el total final.
+  let precioBaseCalculado = producto.precio;
+  
   if (producto.categoria === 'Bocadillo') {
-      if (tamanoSeleccionado === 'Entero') precioBase = precioEnteroReal;
-      else if (tamanoSeleccionado === 'Medio') precioBase = precioMedioReal;
-      else precioBase = precioEnteroReal; // POR DEFECTO: Precio Entero (para mostrar visualmente)
+      if (tamanoSeleccionado === 'Entero') precioBaseCalculado = precioEnteroReal;
+      else if (tamanoSeleccionado === 'Medio') precioBaseCalculado = precioMedioReal;
+      else precioBaseCalculado = precioEnteroReal; // Por defecto para calcular total
   }
 
 
@@ -78,8 +80,8 @@ export default function DetalleProducto() {
   }, 0);
 
 
-  // Precio total para mostrar en pantalla
-  const precioTotal = precioBase + precioTotalExtras;
+  // Precio FINAL (Suma de tamaño elegido + extras) -> Va al botón
+  const precioTotal = precioBaseCalculado + precioTotalExtras;
 
 
   // --- VALIDACIÓN ---
@@ -140,8 +142,9 @@ export default function DetalleProducto() {
         <div className="flex justify-between items-start gap-4 mb-2">
             <h1 className="text-2xl font-bold text-cafe-text leading-tight">{producto.nombre}</h1>
             <span className="text-2xl font-black text-cafe-primary whitespace-nowrap">
-                 {/* Mostrar siempre el precio calculado (que por defecto es el entero) */}
-                 {precioTotal.toFixed(2)}€
+                 {/* CAMBIO AQUÍ: Usamos producto.precio directamente. 
+                     Este es el precio fijo de la base de datos, no cambia con el tamaño. */}
+                 {producto.precio.toFixed(2)}€
             </span>
         </div>
        
@@ -229,7 +232,7 @@ export default function DetalleProducto() {
                     : 'Añadir'}
                 </span>
                
-                {/* Mostramos el precio calculado, incluso si no es válido para añadir */}
+                {/* Aquí seguimos mostrando el precio TOTAL REAL (base elegida + extras) */}
                 <span>{precioTotal.toFixed(2)}€</span>
             </UiButton>
         </div>
@@ -259,5 +262,3 @@ export default function DetalleProducto() {
     </div>
   );
 }
-
-

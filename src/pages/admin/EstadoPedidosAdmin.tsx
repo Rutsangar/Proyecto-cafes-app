@@ -72,16 +72,7 @@ export default function EstadoPedidos() {
             isDark ? "bg-[#1A120B]" : "bg-[#F3EFE0]" 
         )}>
 
-            {/* BOTÓN RUEDECITA (Ajustes) */}
-            <button 
-                onClick={() => navigate('/empleado/configuracion')}
-                className={cn(
-                    "absolute top-8 right-6 p-2 rounded-full shadow-sm transition-all active:scale-90 z-20",
-                    isDark ? "bg-[#2C221C] text-[#F5EBDC]" : "bg-white text-cafe-text"
-                )}
-            >
-                <Settings size={24} />
-            </button>
+            
 
             {/* CABECERA */}
             <div className="flex items-center mb-6 mt-4 relative">
@@ -123,7 +114,7 @@ export default function EstadoPedidos() {
                                     Pedido {index + 1}
                                 </h3>
                                 <span className={cn("text-xs font-mono opacity-50 block mt-1", textMain)}>
-                                    ID: {pedido.id}
+                                    #{pedido.id}
                                 </span>
                             </div>
 
