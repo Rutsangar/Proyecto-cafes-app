@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, User, Moon, LogOut, Key, Clock, Eye, EyeOff, ChevronDown } from 'lucide-react';
+import { ChevronLeft, User, Moon, LogOut, Key, Clock, Eye, EyeOff, ChevronDown, Check } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { cn } from '../lib/utils';
 
@@ -11,11 +11,16 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
   const [clave, setClave] = useState(''); 
   const [mostrarClave, setMostrarClave] = useState(false);
   const [turno, setTurno] = useState(usuarioInicial?.turno || 'Mañana');
+  
+  // Nuevo estado para controlar el desplegable visual
+  const [mostrarMenuTurnos, setMostrarMenuTurnos] = useState(false);
+  
+  const opcionesTurno = ['Mañana', 'Tarde', 'Noche'];
 
   return (
     <div className={cn(
       "min-h-screen p-6 transition-colors duration-500",
-      isDark ? "bg-[#1A120B]" : "bg-[#FDF8F3]"
+      isDark ? "bg-[#1A120B]" : "bg-[#F3EFE0]"
     )}>
       <header className="flex items-center gap-4 mb-8">
         <button 
@@ -50,10 +55,13 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
         </div>
 
         {/* INFO EDITABLE */}
+        {/* NOTA: He quitado 'overflow-hidden' para que el menú desplegable pueda salirse de la caja */}
         <div className={cn(
-          "rounded-[2.5rem] shadow-sm overflow-hidden",
+          "rounded-[2.5rem] shadow-sm relative z-20", 
           isDark ? "bg-[#2C221C]" : "bg-white"
         )}>
+          
+          {/* Input Clave */}
           <div className="p-5 flex items-center gap-4 border-b border-black/5 dark:border-white/5">
             <Key className="text-amber-500 shrink-0" size={20} />
             <div className="flex-1">
@@ -76,35 +84,69 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
             </div>
           </div>
 
+          {/* Input Turno (CUSTOM SELECT) */}
           <div className="p-5 flex items-center gap-4 relative">
             <Clock className="text-green-500 shrink-0" size={20} />
-            <div className="flex-1">
-              <p className="text-[10px] uppercase tracking-wider opacity-50 font-bold">Turno asignado</p>
-              <div className="relative flex items-center">
-                <select 
-                  value={turno}
-                  onChange={(e) => setTurno(e.target.value)}
+            <div className="flex-1 relative">
+              <p className="text-[10px] uppercase tracking-wider opacity-50 font-bold mb-1">Turno asignado</p>
+              
+              {/* Botón Trigger (Lo que se ve siempre) */}
+              <button 
+                onClick={() => setMostrarMenuTurnos(!mostrarMenuTurnos)}
+                className={cn(
+                  "flex items-center justify-between w-full font-bold outline-none",
+                  isDark ? "text-[#F5EBDC]" : "text-[#4E342E]"
+                )}
+              >
+                <span>{turno}</span>
+                <ChevronDown 
+                  size={18} 
                   className={cn(
-                    "bg-transparent font-bold outline-none w-full appearance-none cursor-pointer pr-8 z-10",
-                    isDark ? "text-[#F5EBDC]" : "text-[#4E342E]"
-                  )}
-                >
-                  <option value="Mañana" className="text-black">Mañana</option>
-                  <option value="Tarde" className="text-black">Tarde</option>
-                  <option value="Noche" className="text-black">Noche</option>
-                </select>
-                <ChevronDown size={18} className="absolute right-0 pointer-events-none opacity-50" />
-              </div>
+                    "transition-transform duration-300 opacity-50", 
+                    mostrarMenuTurnos ? "rotate-180" : ""
+                  )} 
+                />
+              </button>
+
+              {/* Menú Desplegable Flotante */}
+              {mostrarMenuTurnos && (
+                <div className={cn(
+                  "absolute top-full left-0 right-0 mt-2 rounded-2xl shadow-xl border z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200",
+                  isDark 
+                    ? "bg-[#1A120B] border-[#F5EBDC]/10" 
+                    : "bg-[#FFFFFF] border-[#4E342E]/10"
+                )}>
+                  {opcionesTurno.map((opcion) => (
+                    <button
+                      key={opcion}
+                      onClick={() => {
+                        setTurno(opcion);
+                        setMostrarMenuTurnos(false);
+                      }}
+                      className={cn(
+                        "w-full text-left px-4 py-3 text-sm font-bold flex items-center justify-between transition-colors",
+                        isDark 
+                          ? "hover:bg-[#F5EBDC]/10 text-[#F5EBDC]" 
+                          : "hover:bg-[#4E342E]/5 text-[#4E342E]",
+                        turno === opcion && (isDark ? "bg-[#F5EBDC]/5" : "bg-[#4E342E]/5")
+                      )}
+                    >
+                      {opcion}
+                      {turno === opcion && <Check size={16} className="text-green-500" />}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* SWITCH MODO OSCURO (ACTUALIZADO) */}
+        {/* SWITCH MODO OSCURO */}
         <button 
           type="button"
-          onClick={() => setIsDark(!isDark)} // Ahora el clic está en toda la tarjeta
+          onClick={() => setIsDark(!isDark)} 
           className={cn(
-            "w-full p-6 rounded-[2.5rem] flex items-center justify-between shadow-sm active:scale-[0.98] transition-all",
+            "w-full p-6 rounded-[2.5rem] flex items-center justify-between shadow-sm active:scale-[0.98] transition-all relative z-10",
             isDark ? "bg-[#2C221C]" : "bg-white"
           )}
         >
@@ -131,7 +173,7 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
         <button 
           onClick={() => navigate('/')}
           className={cn(
-            "w-full p-6 rounded-[2.5rem] flex items-center gap-4 shadow-sm active:scale-95 transition-all text-left",
+            "w-full p-6 rounded-[2.5rem] flex items-center gap-4 shadow-sm active:scale-95 transition-all text-left relative z-10",
             isDark ? "bg-[#2C221C]" : "bg-white"
           )}
         >

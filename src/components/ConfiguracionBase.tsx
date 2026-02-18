@@ -15,7 +15,7 @@ export default function ConfiguracionBase({ rol, nombreUsuario }: ConfigProps) {
   return (
     <div className={cn(
       "min-h-screen p-6 transition-colors duration-500",
-      isDark ? "bg-[#1A120B]" : "bg-[#FDF8F3]"
+      isDark ? "bg-[#1A120B]" : "bg-[#F3EFE0]"
     )}>
       <header className="flex items-center gap-4 mb-8">
         <button 
