@@ -13,7 +13,7 @@ export default function Login() {
         {/* Icono: Usa 'text-cafe-primary' para cambiar de marrón a crema */}
         <Coffee size={80} className="text-cafe-primary mb-4 transition-colors" />
        
-        {/* Título: Usa 'text-cafe-text' para cambiar de marrón oscuro a crema */}
+        {/* Título */}
         <h1 className="text-4xl font-black tracking-wider text-cafe-text transition-colors">
           CaFES
         </h1>
@@ -24,19 +24,17 @@ export default function Login() {
         <UiInput icon={<User size={20} />} placeholder="Nombre completo/Correo" />
         <UiInput icon={<Lock size={20} />} type="password" placeholder="Contraseña" />
        
-        {/* Enlace de "Olvidé mi contraseña" (opcional, añadido para parecerse más a un login real) */}
+        {/* Enlace de "Olvidé mi contraseña" */}
         <div className="text-right">
             <a href="#" className="text-xs font-medium text-gray-500 dark:text-[#575552]/70 hover:text-cafe-primary transition-colors">
                 ¿Olvidaste tu contraseña?
             </a>
         </div>
 
-
         <div className="pt-2">
           <UiButton>Iniciar sesión</UiButton>
         </div>
       </form>
-
 
       <p className="mt-8 text-xs text-gray-500 dark:text-[#575552]/70 font-medium transition-colors">
         ¿No tienes cuenta? <Link to="/registro" className="text-cafe-primary font-bold ml-1 hover:underline">Regístrate</Link>
