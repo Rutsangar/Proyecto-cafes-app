@@ -61,7 +61,7 @@ function App() {
 
                 {/* Detalle (Sin layout) */}
                 <Route path="/producto/:id" element={<DetalleProducto />} />
-                <Route path="/empleado/estado" element={<EstadoPedidos />} />
+                <Route path="/empleado" element={<EstadoPedidos />} />
                 <Route path="/empleado/configuracion" element={<ConfiguracionEmpleado />} />
               </Routes>
             </BrowserRouter>
