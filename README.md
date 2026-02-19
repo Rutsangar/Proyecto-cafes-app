@@ -1,73 +1,27 @@
-# React + TypeScript + Vite
+# ☕ CafES App - Gestión Digital de Cafetería
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+¡Bienvenido al repositorio de **CafES App**! Este proyecto nace con el objetivo de digitalizar y agilizar los procesos de pedido y gestión en la cafetería del instituto **IES Lomo de la Herradura**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Sobre el Proyecto
 
-## React Compiler
+Esta aplicación permite al alumnado y al personal docente realizar pedidos de forma remota, reduciendo las colas y optimizando el flujo de trabajo del personal de la cafetería. Es el resultado de mi **Proyecto Final de Grado en DAM**.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🛠️ Tecnologías utilizadas
 
-## Expanding the ESLint configuration
+* **Frontend:** React, JavaScript (y TypeScript en versiones actuales), TailwindCSS para el diseño responsive.
+* **Backend:** 
+* **Base de Datos:** Airtable (Database-as-a-Service).
+* **Testing & API:** Postman para la validación de endpoints.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## ✨ Características Principales
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+* **Interfaz Mobile-First:** Diseñada para ser utilizada cómodamente desde smartphones.
+* **Gestión de Pedidos en Tiempo Real:** Comunicación fluida entre el cliente y el servidor.
+* **Panel de Administración:** Permite a la cafetería visualizar y gestionar el estado de los pedidos.
+* **Diseño Moderno:** Estética limpia y profesional gracias a TailwindCSS.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
