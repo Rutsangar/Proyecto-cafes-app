@@ -21,15 +21,15 @@
 :root.dark {
   /* --- MODO OSCURO (Dark Espresso) --- */
   --bg-app: #1E1611;
-  --text-app: #F5EBDC;  /* <-- Esto hará que el título CaFES sea color crema */
+  --text-app: #F5EBDC;  
   --bg-card: #2C221C;
   --border-color: #F5EBDC;
   
   /* Inputs Oscuro (Configuración de tu captura) */
-  --input-bg: #342A22;      /* Fondo Marrón medio */
-  --input-text: #F5EBDC;    /* Texto claro */
-  --input-border: #F5EBDC;  /* Borde claro */
-  --input-placeholder: rgba(245, 235, 220, 0.5); /* Crema semitransparente */
+  --input-bg: #342A22;      
+  --input-text: #F5EBDC;    
+  --input-border: #F5EBDC;  
+  --input-placeholder: rgba(245, 235, 220, 0.5); 
   
   /* Botones Oscuro */
   --btn-primary: #F5EBDC;

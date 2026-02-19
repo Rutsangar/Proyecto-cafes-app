@@ -10,7 +10,7 @@ export default function Login() {
      
       {/* Logo */}
       <div className="flex flex-col items-center mb-10">
-        {/* Icono: Usa 'text-cafe-primary' para cambiar de marrón a crema */}
+        {/* Icono */}
         <Coffee size={80} className="text-cafe-primary mb-4 transition-colors" />
        
         {/* Título */}

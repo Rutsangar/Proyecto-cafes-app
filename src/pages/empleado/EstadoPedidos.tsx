@@ -13,7 +13,7 @@ interface Pedido {
     items: { nombre: string; precio: number; img: string }[];
 }
 
-// CAMBIO AQUÍ: Todos inicializados en 'ACEPTADO' 
+// Todos inicializados en 'ACEPTADO' 
 const pedidosIniciales: Pedido[] = [
     {
         id: "1234",

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, User, Moon, LogOut, Key, Clock, Eye, EyeOff, ChevronDown, Check } from 'lucide-react';
+import { User, Moon, LogOut, Key, Clock, Eye, EyeOff, ChevronDown, Check } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { cn } from '../lib/utils';
 
@@ -46,7 +46,6 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
         </div>
 
         {/* INFO EDITABLE */}
-        {/* NOTA: He quitado 'overflow-hidden' para que el menú desplegable pueda salirse de la caja */}
         <div className={cn(
           "rounded-[2.5rem] shadow-sm relative z-20",
           isDark ? "bg-[#2C221C]" : "bg-white"
