@@ -1,13 +1,11 @@
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { productos } from '../lib/data';
 import { UiButton } from '../components/ui/Button';
 import { useCarrito } from '../context/CarritoContext';
-import { cn } from '../lib/utils';
 
 
 export default function Carrito() {
-  const navigate = useNavigate();
   const { items, eliminarProducto, limpiarCarrito } = useCarrito();
 
 
@@ -95,8 +93,8 @@ export default function Carrito() {
                   <UiButton
                     className="w-full hover:brightness-95 shadow-sm"
                     style={{
-                        backgroundColor: '#D7CCC8', // Beige suave (Taupe)
-                        color: '#3E2723'            // Texto marrón oscuro para contraste
+                        backgroundColor: '#D7CCC8',
+                        color: '#3E2723'    
                     }}
                   >
                     Pagar

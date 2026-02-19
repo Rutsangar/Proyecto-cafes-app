@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ChevronLeft, CheckCircle, ShoppingBag } from 'lucide-react';
 import { productos } from '../lib/data';
@@ -17,16 +17,10 @@ export default function DetalleProducto() {
   const producto = productos.find(p => p.id === Number(id));
 
 
-  // --- ESTADOS ---
+  // ESTADOS 
   const [extrasSeleccionados, setExtrasSeleccionados] = useState<string[]>([]);
   const [tamanoSeleccionado, setTamanoSeleccionado] = useState<string | null>(null);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
-
-
-  useEffect(() => {
-     setExtrasSeleccionados([]);
-     setTamanoSeleccionado(null);
-  }, [id]);
 
 
   if (!producto) {
@@ -39,7 +33,7 @@ export default function DetalleProducto() {
   }
 
 
-  // --- CONFIGURACIÓN ---
+  // CONFIGURACIÓN 
   const listaExtras = producto.categoria === 'Bebida caliente'
     ? ['Para llevar (+0.10€)']
     : producto.categoria === 'Bocadillo'
@@ -64,7 +58,7 @@ export default function DetalleProducto() {
   };
 
 
-  // --- CÁLCULO DEL PRECIO REAL ---
+  // CÁLCULO DEL PRECIO REAL 
   let precioBaseCalculado = producto.precio;
   
   if (producto.categoria === 'Bocadillo') {
@@ -82,7 +76,7 @@ export default function DetalleProducto() {
   const precioTotal = precioBaseCalculado + precioTotalExtras;
 
 
-  // --- VALIDACIÓN ---
+  // VALIDACIÓN 
   const esValido =
     (producto.categoria !== 'Bocadillo' || tamanoSeleccionado !== null) &&
     extrasSeleccionados.length > 0;
@@ -135,7 +129,6 @@ export default function DetalleProducto() {
       </div>
 
 
-      {/* CAMBIO AQUÍ: Se ha eliminado 'pb-4' de la lista de clases */}
       <div className="p-6 -mt-8 bg-cafe-bg rounded-t-[2rem] relative z-10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] min-h-full transition-colors duration-300">
        
         <div className="flex justify-between items-start gap-4 mb-2">
@@ -153,7 +146,7 @@ export default function DetalleProducto() {
         </p>
 
 
-        {/* --- SECCIÓN TAMAÑO --- */}
+        {/* SECCIÓN TAMAÑO */}
         {producto.categoria === 'Bocadillo' && (
           <div className="mt-8 animate-in slide-in-from-left duration-300">
             <h3 className="font-bold text-lg text-cafe-primary mb-4 border-b-2 border-cafe-primary/20 inline-block pb-1">

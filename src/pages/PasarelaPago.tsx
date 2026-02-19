@@ -35,7 +35,7 @@ export default function PasarelaPago() {
   };
 
 
-  // Clase para los inputs en modo oscuro para que no brillen
+  // Clase para los inputs en modo oscuro 
   const inputDarkClass = "dark:bg-white/5 dark:border-white/10 dark:text-[#F5EBDC] dark:placeholder:text-[#F5EBDC]/30 transition-colors";
 
 
@@ -58,7 +58,7 @@ export default function PasarelaPago() {
 
       <div className="px-6 mt-4">
        
-        {/* Tarjeta Visual (Gradiente Marrón - Se ve igual en ambos modos) */}
+        {/* Tarjeta Visual */}
         <div className="bg-gradient-to-br from-[#6F4E37] to-[#8D6E63] rounded-2xl p-6 text-white shadow-xl mb-8 relative overflow-hidden border border-white/10">
             <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
             <div className="flex justify-between items-start mb-8">
