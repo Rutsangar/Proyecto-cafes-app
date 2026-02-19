@@ -114,7 +114,7 @@ export default function EstadoPedidos() {
                                     Pedido {index + 1}
                                 </h3>
                                 <span className={cn("text-xs font-mono opacity-50 block mt-1", textMain)}>
-                                    #{pedido.id}
+                                    ID: {pedido.id}
                                 </span>
                             </div>
 

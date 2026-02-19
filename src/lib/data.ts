@@ -6,7 +6,7 @@ export const productos = [
     precio: 1.50,
     categoria: "Bocadillo",
     img: "https://images.unsplash.com/photo-1628191010210-a59de33e5941?q=80&w=200&auto=format&fit=crop",
-    desc: "El clásico de siempre. Elige chorizo, salchichón o queso.",
+    desc: "El clásico. Elige jamón jork, pavo cocido o queso.",
     precioEntero: 1.50,
     precioMedio: 1.00
   },
