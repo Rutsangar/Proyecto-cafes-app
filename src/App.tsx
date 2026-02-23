@@ -22,6 +22,7 @@ import ConfiguracionEmpleado from './pages/empleado/ConfiguracionEmpleado';
 import MenuAdmin from './pages/admin/MenuAdmin';
 import EditarProducto from './pages/admin/EditarProducto';
 import EstadoPedidosAdmin from './pages/admin/EstadoPedidosAdmin';
+import Centros from './pages/admin/Centros';
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
                   <Route path="/admin/ajustes" element={<AjustesAdmin />} />
                   <Route path="/admin/estado-pedidos" element={<EstadoPedidosAdmin />} />
                   <Route path="/admin/editar-producto" element={<EditarProducto />} />
+                  <Route path="/admin/centros" element={<Centros />} />
                 </Route>
 
                 {/* Ruta del empleado de la cafetería */}

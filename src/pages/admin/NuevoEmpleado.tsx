@@ -35,7 +35,7 @@ export default function NuevoEmpleado() {
     if (mostrandoExito) {
       const timer = setTimeout(() => {
         setMostrandoExito(false);
-        navigate('/admin');
+        navigate('/admin/personal');
       }, 2000);
       return () => clearTimeout(timer);
     }

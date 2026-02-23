@@ -15,7 +15,7 @@ export default function GestionPersonal() {
 
 
   return (
-    <div className="p-6 h-full relative bg-cafe-bg dark:bg-[#1A120B] min-h-screen transition-colors duration-300">
+    <div className="p-6 h-full relative bg-cafe-bg dark:bg-[#F5EBDC] min-h-screen transition-colors duration-300">
      
       {/* CABECERA CON FLECHA */}
       <div className="flex items-center mb-8 mt-4 relative">
@@ -104,7 +104,7 @@ export default function GestionPersonal() {
 
               {/* Menú desplegable de opciones */}
               {menuAbierto === emp.id && (
-                <div className="absolute right-0 top-10 w-40 bg-white dark:bg-[#342A22] rounded-xl shadow-xl border border-black/5 dark:border-white/10 z-50 overflow-hidden">
+                <div className="absolute right-0 top-10 w-40 bg-white dark:bg-[#FFFFF] rounded-xl shadow-xl border border-black/5 dark:border-white/10 z-50 overflow-hidden">
                   <button
                     onClick={() => {
                         setIdEliminar(emp.id);

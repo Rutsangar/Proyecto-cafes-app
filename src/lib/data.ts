@@ -7,8 +7,10 @@ export const productos = [
     categoria: "Bocadillo",
     img: "https://images.unsplash.com/photo-1628191010210-a59de33e5941?q=80&w=200&auto=format&fit=crop",
     desc: "El clásico de siempre. Elige chorizo, salchichón o queso.",
+    ingredientes: ["Pan", "Queso", "Chorizo"],
     precioEntero: 1.50,
-    precioMedio: 1.00
+    precioMedio: 1.00,
+    precioPulguita: 1.50
   },
   {
     id: 2,
@@ -17,8 +19,10 @@ export const productos = [
     categoria: "Bocadillo",
     img: "https://images.unsplash.com/photo-1509722747741-090cb262bd3b?q=80&w=200&auto=format&fit=crop",
     desc: "Mezcla dos sabores a tu elección.",
+    ingredientes: ["Pan", "Queso", "Chorizo"],
     precioEntero: 1.70,
-    precioMedio: 1.20
+    precioMedio: 1.20,
+    precioPulguita: 1.50
   },
   {
     id: 3,
@@ -27,8 +31,10 @@ export const productos = [
     categoria: "Bocadillo",
     img: "https://images.unsplash.com/photo-1554433607-66b5efe9d304?q=80&w=200&auto=format&fit=crop",
     desc: "Jamón serrano recién cortado en pan crujiente.",
+    ingredientes: ["Pan", "Queso", "Chorizo"],
     precioEntero: 1.80,
-    precioMedio: 1.30
+    precioMedio: 1.30,
+    precioPulguita: 1.50
   },
 
 
@@ -69,7 +75,7 @@ export const productos = [
     precio: 1.00,
     categoria: "Bollería",
     img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=200&auto=format&fit=crop",
-    desc: "Crujiente por fuera y tierno por dentro."
+    desc: "Crujiente por fuera y tierno por dentro.",
   },
   {
     id: 8,

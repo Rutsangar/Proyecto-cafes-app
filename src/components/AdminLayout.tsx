@@ -1,5 +1,4 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Users, Utensils, Settings } from 'lucide-react'; // Iconos nuevos
 import { cn } from '../lib/utils';
 import { useTheme } from '../context/ThemeContext';
 

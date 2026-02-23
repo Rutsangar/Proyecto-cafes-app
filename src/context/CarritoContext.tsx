@@ -1,13 +1,12 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
-
-// Definimos qué es un "Item" en el carrito ahora
+// Actualizamos la definición del Item
 export interface CartItem {
   id: number;
   extras: string[];
-  precio: number; // Guardamos el precio final calculado
+  precio: number; 
+  alergias?: string[]; // Añadimos esto. El "?" significa que es opcional.
 }
-
 
 interface CarritoContextType {
   items: CartItem[];
@@ -17,28 +16,22 @@ interface CarritoContextType {
   limpiarCarrito: () => void;
 }
 
-
 const CarritoContext = createContext<CarritoContextType | undefined>(undefined);
-
 
 export function CarritoProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
-
 
   const anadirProducto = (item: CartItem) => {
     setItems((prev) => [...prev, item]);
   };
 
-
   const eliminarProducto = (index: number) => {
     setItems((prev) => prev.filter((_, i) => i !== index));
   };
 
-
   const limpiarCarrito = () => {
     setItems([]);
   };
-
 
   return (
     <CarritoContext.Provider
@@ -54,7 +47,6 @@ export function CarritoProvider({ children }: { children: ReactNode }) {
     </CarritoContext.Provider>
   );
 }
-
 
 export function useCarrito() {
   const context = useContext(CarritoContext);

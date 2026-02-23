@@ -1,4 +1,4 @@
-import { ClipboardList, Users, UtensilsCrossed, Settings } from 'lucide-react';
+import { ClipboardList, Users, UtensilsCrossed, Settings, School } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { cn } from '../../lib/utils';
@@ -14,7 +14,7 @@ export default function AdminMenu() {
       color: 'bg-orange-100 text-orange-600'
     },
     { 
-      label: 'Estado de pedidos', // EL NUEVO ACCESO
+      label: 'Estado de pedidos', 
       icon: <ClipboardList size={24} />, 
       ruta: '/admin/estado-pedidos',
       color: 'bg-green-100 text-green-600'
@@ -26,6 +26,12 @@ export default function AdminMenu() {
       color: 'bg-blue-100 text-blue-600'
     },
     { 
+      label: 'Centros', // BOTÓN NUEVO ENTRE PERSONAL Y CONFIGURACIÓN
+      icon: <School size={24} />, 
+      ruta: '/admin/centros',
+      color: 'bg-purple-100 text-purple-600'
+    },
+    { 
       label: 'Configuración', 
       icon: <Settings size={24} />, 
       ruta: '/admin/ajustes',
@@ -34,9 +40,15 @@ export default function AdminMenu() {
   ];
 
   return (
-    <div className="p-6 min-h-screen bg-cafe-bg transition-colors duration-300">
-      <h1 className="text-3xl font-bold text-center text-cafe-text mb-10 mt-4">
-        Panel de Control
+    <div className={cn(
+      "p-6 min-h-screen transition-colors duration-300",
+      isDark ? "bg-[#1A120B]" : "bg-[#F3EFE0]" // Aplicando tus colores de fondo exactos
+    )}>
+      <h1 className={cn(
+        "text-3xl font-bold text-center mb-10 mt-4",
+        isDark ? "text-[#F5EBDC]" : "text-[#4E342E]"
+      )}>
+        Panel de Control - IES José Zerpa
       </h1>
 
       <div className="grid grid-cols-1 gap-4 max-w-sm mx-auto">
@@ -53,7 +65,10 @@ export default function AdminMenu() {
             <div className={cn("p-3 rounded-2xl transition-transform group-hover:scale-110", opcion.color)}>
               {opcion.icon}
             </div>
-            <span className="font-bold text-lg text-cafe-text">
+            <span className={cn(
+              "font-bold text-lg",
+              isDark ? "text-[#F5EBDC]" : "text-[#4E342E]"
+            )}>
               {opcion.label}
             </span>
           </Link>
