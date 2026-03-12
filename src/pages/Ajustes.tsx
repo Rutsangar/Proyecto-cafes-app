@@ -19,11 +19,15 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
 
   return (
     <div className={cn(
-      "min-h-screen p-6 transition-colors duration-500",
+      // --- MAGIA AQUÍ ---
+      // fixed inset-0: Lo pega a los bordes de la pantalla.
+      // overscroll-none: Mata el rebote del móvil.
+      // pb-24: Deja hueco para tu navbar inferior.
+      "fixed inset-0 z-0 w-full max-w-[600px] mx-auto overflow-hidden overscroll-none p-6 pb-24 transition-colors duration-500",
       isDark ? "bg-[#1A120B]" : "bg-[#F3EFE0]"
     )}>
       <header className="flex items-center gap-4 mb-8">
-        <h1 className="text-3xl font-bold text-center text-cafe-text mb-8 mt-2">
+        <h1 className="text-3xl font-bold text-center text-cafe-text w-full mt-2">
           Mi perfil
         </h1>
       </header>
@@ -80,7 +84,7 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
             <div className="flex-1 relative">
               <p className="text-[10px] uppercase tracking-wider opacity-50 font-bold mb-1">Turno asignado</p>
 
-              {/* Botón Trigger (Lo que se ve siempre) */}
+              {/* Botón Trigger */}
               <button
                 onClick={() => setMostrarMenuTurnos(!mostrarMenuTurnos)}
                 className={cn(
@@ -161,7 +165,7 @@ export default function ConfiguracionCliente({ usuarioInicial }: { usuarioInicia
 
         {/* BOTÓN CERRAR SESIÓN */}
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/inicio')}
           className={cn(
             "w-full p-6 rounded-[2.5rem] flex items-center gap-4 shadow-sm active:scale-95 transition-all text-left relative z-10",
             isDark ? "bg-[#2C221C]" : "bg-white"

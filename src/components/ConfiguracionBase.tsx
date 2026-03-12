@@ -14,7 +14,8 @@ export default function ConfiguracionBase({ rol, nombreUsuario }: ConfigProps) {
 
   return (
     <div className={cn(
-      "min-h-screen p-6 transition-colors duration-500",
+      // MAGIA APLICADA: fixed inset-0 y overscroll-none
+      "fixed inset-0 z-0 w-full max-w-[600px] mx-auto overflow-hidden overscroll-none p-6 pb-24 transition-colors duration-500",
       isDark ? "bg-[#1A120B]" : "bg-[#F3EFE0]"
     )}>
       <header className="flex items-center gap-4 mb-8">
@@ -58,13 +59,13 @@ export default function ConfiguracionBase({ rol, nombreUsuario }: ConfigProps) {
             isDark ? "bg-[#2C221C]" : "bg-white"
           )}
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 pointer-events-none">
             <Moon className={isDark ? "text-indigo-400" : "text-indigo-600"} size={24} />
             <span className={cn("font-bold", isDark ? "text-[#F5EBDC]" : "text-[#4E342E]")}>
               Modo Oscuro
             </span>
           </div>
-          <div className="relative w-14 h-7">
+          <div className="relative w-14 h-7 pointer-events-none">
             <div className={cn(
               "w-full h-full rounded-full transition-colors duration-300",
               isDark ? "bg-indigo-600" : "bg-gray-300"
@@ -78,9 +79,9 @@ export default function ConfiguracionBase({ rol, nombreUsuario }: ConfigProps) {
 
         {/* CERRAR SESIÓN */}
         <button 
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('/inicio')}
           className={cn(
-            "w-full p-6 rounded-[2.5rem] flex items-center gap-4 shadow-sm active:scale-95 transition-all",
+            "w-full p-6 rounded-[2.5rem] flex items-center gap-4 shadow-sm active:scale-95 transition-all text-left",
             isDark ? "bg-[#2C221C]" : "bg-white"
           )}
         >

@@ -33,7 +33,7 @@ function App() {
             <BrowserRouter>
               <Routes>
                 {/* Rutas Públicas */}
-                <Route path="/" element={<Login />} />
+                <Route path="/inicio" element={<Login />} />
                 <Route path="/registro" element={<Registro />} />
 
                 {/* Rutas Cliente (Layout normal) */}

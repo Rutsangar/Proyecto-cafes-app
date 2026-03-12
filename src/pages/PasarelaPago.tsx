@@ -89,9 +89,10 @@ export default function PasarelaPago() {
                 <UiInput
                     icon={<CreditCard size={20} className="text-gray-400 dark:text-[#F5EBDC]/50" />}
                     placeholder="0000 0000 0000 0000"
+                    type="text"
                     required
                     maxLength={19}
-                    className={inputDarkClass} // <--- APLICAMOS ESTILO OSCURO
+                    className={inputDarkClass} 
                 />
             </div>
 
@@ -102,6 +103,7 @@ export default function PasarelaPago() {
                     <UiInput
                         icon={<Calendar size={20} className="text-gray-400 dark:text-[#F5EBDC]/50" />}
                         placeholder="MM/AA"
+                        type="text"
                         required
                         maxLength={5}
                         className={inputDarkClass}
@@ -112,7 +114,7 @@ export default function PasarelaPago() {
                     <UiInput
                         icon={<Lock size={20} className="text-gray-400 dark:text-[#F5EBDC]/50" />}
                         placeholder="123"
-                        type="password"
+                        type="text"
                         required
                         maxLength={3}
                         className={inputDarkClass}
@@ -126,6 +128,7 @@ export default function PasarelaPago() {
                 <UiInput
                     icon={<User size={20} className="text-gray-400 dark:text-[#F5EBDC]/50" />}
                     placeholder="Como aparece en la tarjeta"
+                    type="text"
                     required
                     className={inputDarkClass}
                 />

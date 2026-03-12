@@ -13,7 +13,6 @@ interface Pedido {
     items: { nombre: string; precio: number; img: string }[];
 }
 
-// --- CAMBIO AQUÍ: Todos inicializados en 'ACEPTADO' ---
 const pedidosIniciales: Pedido[] = [
     {
         id: "1234",
@@ -68,14 +67,15 @@ export default function EstadoPedidos() {
 
     return (
         <div className={cn(
-            "p-6 min-h-screen pb-20 transition-colors duration-300 relative",
+            // --- MAGIA APLICADA AQUÍ ---
+            // fixed inset-0 y overscroll-none para bloquear la pantalla completa.
+            // flex flex-col para estructurar la cabecera y el cuerpo.
+            "fixed inset-0 z-0 w-full max-w-[600px] mx-auto overflow-hidden overscroll-none p-6 pb-24 flex flex-col transition-colors duration-300",
             isDark ? "bg-[#1A120B]" : "bg-[#F3EFE0]" 
         )}>
 
-            
-
-            {/* CABECERA */}
-            <div className="flex items-center mb-6 mt-4 relative">
+            {/* CABECERA (Estática, con shrink-0 para no encogerse) */}
+            <div className="flex items-center mb-6 mt-4 relative shrink-0">
                 {isAdminPath && (
                     <button
                         onClick={() => navigate('/admin')}
@@ -96,73 +96,76 @@ export default function EstadoPedidos() {
                 </h1>
             </div>
 
-            {/* GRID DE PEDIDOS COMPACTOS */}
-            <div className="grid grid-cols-1 gap-3">
-                {pedidos.map((pedido, index) => (
-                    <div
-                        key={pedido.id}
-                        className={cn(
-                            "rounded-2xl p-4 shadow-sm border transition-all animate-in slide-in-from-bottom-2 duration-500",
-                            cardBg,
-                            isDark ? "border-[#F5EBDC]/5" : "border-[#4E342E]/5"
-                        )}
-                    >
-                        {/* FILA SUPERIOR: TÍTULO, ID y ESTADO */}
-                        <div className="flex items-start justify-between mb-4">
-                            <div>
-                                <h3 className={cn("font-bold text-lg leading-none", textMain)}>
-                                    Pedido {index + 1}
-                                </h3>
-                                <span className={cn("text-xs font-mono opacity-50 block mt-1", textMain)}>
-                                    #{pedido.id}
+            {/* CONTENEDOR CON SCROLL INTERNO PARA LOS PEDIDOS */}
+            <div className="flex-1 overflow-y-auto no-scrollbar pb-6">
+                <div className="grid grid-cols-1 gap-3">
+                    {pedidos.map((pedido, index) => (
+                        <div
+                            key={pedido.id}
+                            className={cn(
+                                "rounded-2xl p-4 shadow-sm border transition-all animate-in slide-in-from-bottom-2 duration-500",
+                                cardBg,
+                                isDark ? "border-[#F5EBDC]/5" : "border-[#4E342E]/5"
+                            )}
+                        >
+                            {/* FILA SUPERIOR: TÍTULO, ID y ESTADO */}
+                            <div className="flex items-start justify-between mb-4">
+                                <div>
+                                    <h3 className={cn("font-bold text-lg leading-none", textMain)}>
+                                        Pedido {index + 1}
+                                    </h3>
+                                    <span className={cn("text-xs font-mono opacity-50 block mt-1", textMain)}>
+                                        #{pedido.id}
+                                    </span>
+                                </div>
+
+                                <span className={cn(
+                                    "px-3 py-1 rounded-full text-[10px] font-bold border tracking-wide",
+                                    getStatusColor(pedido.estado)
+                                )}>
+                                    {pedido.estado}
                                 </span>
                             </div>
 
-                            <span className={cn(
-                                "px-3 py-1 rounded-full text-[10px] font-bold border tracking-wide",
-                                getStatusColor(pedido.estado)
-                            )}>
-                                {pedido.estado}
-                            </span>
-                        </div>
+                            {/* FILA INFERIOR: BOTONES ACCIÓN */}
+                            <div className="flex gap-2">
+                                {/* BOTÓN PREPARAR */}
+                                <button
+                                    onClick={() => cambiarEstado(pedido.id, 'EN PREPARACIÓN')}
+                                    // Deshabilitado si ya está preparándose o finalizado
+                                    disabled={pedido.estado === 'EN PREPARACIÓN' || pedido.estado === 'FINALIZADO'}
+                                    className={cn(
+                                        "flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95",
+                                        pedido.estado === 'EN PREPARACIÓN' 
+                                            ? "bg-orange-500 text-white shadow-md opacity-100" // Estado activo
+                                            : pedido.estado === 'FINALIZADO'
+                                                ? "bg-gray-200 dark:bg-white/5 text-gray-400 opacity-50 cursor-not-allowed" // Deshabilitado
+                                                : "bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-500/10 dark:text-orange-400" // Disponible
+                                    )}
+                                >
+                                    <Flame size={14} /> Preparar
+                                </button>
 
-                        {/* FILA INFERIOR: BOTONES ACCIÓN */}
-                        <div className="flex gap-2">
-                            {/* BOTÓN PREPARAR */}
-                            <button
-                                onClick={() => cambiarEstado(pedido.id, 'EN PREPARACIÓN')}
-                                // Deshabilitado si ya está preparándose o finalizado
-                                disabled={pedido.estado === 'EN PREPARACIÓN' || pedido.estado === 'FINALIZADO'}
-                                className={cn(
-                                    "flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95",
-                                    pedido.estado === 'EN PREPARACIÓN' 
-                                        ? "bg-orange-500 text-white shadow-md opacity-100" // Estado activo
-                                        : pedido.estado === 'FINALIZADO'
-                                            ? "bg-gray-200 dark:bg-white/5 text-gray-400 opacity-50 cursor-not-allowed" // Deshabilitado
-                                            : "bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-500/10 dark:text-orange-400" // Disponible
-                                )}
-                            >
-                                <Flame size={14} /> Preparar
-                            </button>
-
-                            {/* BOTÓN FINALIZAR */}
-                            <button
-                                onClick={() => cambiarEstado(pedido.id, 'FINALIZADO')}
-                                // Deshabilitado solo si ya está finalizado (puedes finalizar directamente desde aceptado si quieres)
-                                disabled={pedido.estado === 'FINALIZADO'}
-                                className={cn(
-                                    "flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95",
-                                    pedido.estado === 'FINALIZADO'
-                                        ? "bg-green-500 text-white shadow-md" // Estado activo
-                                        : "bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-500/10 dark:text-green-400" // Disponible
-                                )}
-                            >
-                                <CheckCircle2 size={14} /> Finalizar
-                            </button>
+                                {/* BOTÓN FINALIZAR */}
+                                <button
+                                    onClick={() => cambiarEstado(pedido.id, 'FINALIZADO')}
+                                    // Deshabilitado solo si ya está finalizado
+                                    disabled={pedido.estado === 'FINALIZADO'}
+                                    className={cn(
+                                        "flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-95",
+                                        pedido.estado === 'FINALIZADO'
+                                            ? "bg-green-500 text-white shadow-md" // Estado activo
+                                            : "bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-500/10 dark:text-green-400" // Disponible
+                                    )}
+                                >
+                                    <CheckCircle2 size={14} /> Finalizar
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
+            
         </div>
     );
 }

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, CheckCircle, ShoppingBag } from 'lucide-react';
+import { ChevronLeft, CheckCircle, ShoppingBag, Plus, Minus } from 'lucide-react';
 import { productos } from '../lib/data';
 import { UiButton } from '../components/ui/Button';
 import { useCarrito } from '../context/CarritoContext';
@@ -14,14 +14,38 @@ export default function DetalleProducto() {
 
   const producto = productos.find(p => p.id === Number(id));
 
-  // ESTADOS 
+  // --- LÓGICA ESPECIAL PARA BOCADILLOS DE EMBUTIDO ---
+  const nombreLower = producto?.nombre.toLowerCase() || '';
+  const esUnEmbutido = nombreLower.includes('un embutido');
+  const esDosEmbutidos = nombreLower.includes('dos embutidos');
+  const esBocadilloEmbutido = esUnEmbutido || esDosEmbutidos;
+  
+  const maxEmbutidos = esUnEmbutido ? 1 : (esDosEmbutidos ? 2 : 0);
+  const opcionesEmbutidos = ["Jamón cocido", "Queso gouda", "Pavo cocido"];
+
+  // ESTADOS GENERALES
   const [extrasSeleccionados, setExtrasSeleccionados] = useState<string[]>([]);
   const [tamanoSeleccionado, setTamanoSeleccionado] = useState<string | null>(null);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   
-  // NUEVOS ESTADOS PARA ALERGIAS
+  // ESTADOS PARA ALERGIAS
   const [tieneAlergias, setTieneAlergias] = useState(false);
   const [alergiasSeleccionadas, setAlergiasSeleccionadas] = useState<string[]>([]);
+
+  // ESTADO PARA INGREDIENTES QUITADOS (Normales)
+  const [ingredientesQuitados, setIngredientesQuitados] = useState<string[]>([]);
+
+  // ESTADO PARA ELEGIR EMBUTIDOS 
+  const [embutidosSeleccionados, setEmbutidosSeleccionados] = useState<string[]>([]);
+
+  useEffect(() => {
+     setExtrasSeleccionados([]);
+     setTamanoSeleccionado(null);
+     setTieneAlergias(false);
+     setAlergiasSeleccionadas([]);
+     setIngredientesQuitados([]); 
+     setEmbutidosSeleccionados([]); 
+  }, [id]);
 
   if (!producto) {
     return (
@@ -32,11 +56,11 @@ export default function DetalleProducto() {
     );
   }
 
-  // CONFIGURACIÓN 
-  const listaExtras = producto.categoria === 'Bebida caliente'
-    ? ['Para llevar (+0.10€)']
-    : producto.nombre.includes('embutido') || producto.nombre.includes('embutidos')
-    ? ['Sin extras']
+  // --- CONFIGURACIÓN DE EXTRAS ACTUALIZADA ---
+  const listaExtras = esBocadilloEmbutido
+    ? [] 
+    : producto.categoria === 'Bebida caliente'
+    ? ['Sin extras', 'Para llevar (+0.10€)']
     : producto.categoria === 'Bocadillo'
     ? ['Sin extras', 'Queso (+0.50€)', 'Tomate y lechuga (+0.30€)', 'Pan especial (+0.20€)']
     : ['Sin extras'];
@@ -65,7 +89,6 @@ export default function DetalleProducto() {
 
   // CÁLCULO DEL PRECIO REAL 
   let precioBaseCalculado = producto.precio;
-  
   if (producto.categoria === 'Bocadillo') {
       if (tamanoSeleccionado === 'Entero') precioBaseCalculado = precioEnteroReal;
       else if (tamanoSeleccionado === 'Medio') precioBaseCalculado = precioMedioReal;
@@ -79,11 +102,18 @@ export default function DetalleProducto() {
 
   const precioTotal = precioBaseCalculado + precioTotalExtras;
 
-  // VALIDACIÓN 
-  const esValido =
-    (producto.categoria !== 'Bocadillo' || tamanoSeleccionado !== null) &&
-    extrasSeleccionados.length > 0;
+  // --- VALIDACIÓN DINÁMICA ---
+  let esValido = true;
+  if (producto.categoria === 'Bocadillo' && !tamanoSeleccionado) {
+    esValido = false;
+  }
+  if (esBocadilloEmbutido) {
+    if (embutidosSeleccionados.length !== maxEmbutidos) esValido = false;
+  } else {
+    if (extrasSeleccionados.length === 0) esValido = false;
+  }
 
+  // --- FUNCIONES TOGGLE ---
   const toggleExtra = (extra: string) => {
     const opcionesUnicas = ["Sin extras", "Taza"];
     if (opcionesUnicas.includes(extra)) {
@@ -109,15 +139,55 @@ export default function DetalleProducto() {
     );
   };
 
+  const toggleQuitarIngrediente = (ingrediente: string) => {
+    setIngredientesQuitados(prev => 
+      prev.includes(ingrediente) 
+        ? prev.filter(i => i !== ingrediente)
+        : [...prev, ingrediente]
+    );
+  };
+
+  // --- NUEVAS FUNCIONES PARA EMBUTIDOS ---
+  const addEmbutido = (emb: string) => {
+    if (embutidosSeleccionados.length < maxEmbutidos) {
+      setEmbutidosSeleccionados(prev => [...prev, emb]);
+    }
+  };
+
+  const removeEmbutido = (emb: string) => {
+    setEmbutidosSeleccionados(prev => {
+      const index = prev.indexOf(emb);
+      if (index === -1) return prev;
+      const copy = [...prev];
+      copy.splice(index, 1);
+      return copy;
+    });
+  };
+
   const handleAnadir = () => {
     if (producto && esValido) {
+      const embutidosProcesados: string[] = [];
+      if (esBocadilloEmbutido) {
+        const counts: Record<string, number> = {};
+        embutidosSeleccionados.forEach(e => counts[e] = (counts[e] || 0) + 1);
+        for (const [emb, count] of Object.entries(counts)) {
+          embutidosProcesados.push(count > 1 ? `Doble ${emb.toLowerCase()}` : emb);
+        }
+      }
+
+      const extrasFinales = [
+        ...(tamanoSeleccionado ? [tamanoSeleccionado] : []),
+        ...(esBocadilloEmbutido ? embutidosProcesados : extrasSeleccionados),
+        ...(esBocadilloEmbutido ? [] : ingredientesQuitados.map(ing => `Sin ${ing.toLowerCase()}`))
+      ];
+
       anadirProducto({
         id: producto.id,
-        extras: tamanoSeleccionado ? [tamanoSeleccionado, ...extrasSeleccionados] : extrasSeleccionados,
+        extras: extrasFinales,
         precio: precioTotal,
-        // Se pueden pasar las alergias al contexto si tu CarritoContext lo permite
         alergias: tieneAlergias ? alergiasSeleccionadas : [] 
-      });
+      } as any); 
+      
       setMostrarConfirmacion(true);
       setTimeout(() => setMostrarConfirmacion(false), 2500);
     }
@@ -129,8 +199,9 @@ export default function DetalleProducto() {
       <div className="relative h-72 w-full shrink-0">
         <img src={producto.img} alt={producto.nombre} className="w-full h-full object-cover" />
         <Link to="/menu" className={cn(
-          "absolute top-4 left-4 p-2.5 rounded-full shadow-sm backdrop-blur-sm transition-all active:scale-95",
-          "bg-white/90", isDark ? "text-[#1E1611]" : "text-cafe-text"
+          "absolute top-4 left-4 p-2.5 rounded-full shadow-md transition-all active:scale-95",
+          // APLICAMOS LOS COLORES EXACTOS CORREGIDOS:
+          isDark ? "bg-[#1e1611] text-[#f5ebdc]" : "bg-[#f5ebdc] text-[#1A120B]"
         )}>
           <ChevronLeft size={24} />
         </Link>
@@ -145,15 +216,12 @@ export default function DetalleProducto() {
             </span>
         </div>
         
-        <div className="text-sm text-cafe-text opacity-80 mt-4 leading-relaxed">
-          {producto.desc} <br/>
-          <span className="block mt-2 text-xs">
-            Ingredientes: {producto.ingredientes?.join(', ')}
-          </span>
-        </div>
+        <p className="text-sm text-cafe-text opacity-80 mt-4 leading-relaxed">
+          {producto.desc}
+        </p>
 
-        {/* NUEVA SECCIÓN DE ALERGIAS */}
-        <div className="mt-6">
+        {/* SECCIÓN DE ALERGIAS */}
+        <div className="mt-8">
           <label className="flex items-center gap-4 cursor-pointer group select-none">
             <div className="relative flex items-center justify-center">
               <input
@@ -183,7 +251,7 @@ export default function DetalleProducto() {
                       "px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border",
                       alergiasSeleccionadas.includes(alergia)
                         ? "bg-cafe-primary border-cafe-primary text-black"
-                        : "bg-transparent  border-cafe-text/20 text-cafe-text/60"
+                        : "bg-transparent border-cafe-text/20 text-cafe-text/60"
                     )}
                   >
                     {alergia}
@@ -220,38 +288,148 @@ export default function DetalleProducto() {
           </div>
         )}
 
-        {/* Sección Extras */}
-        <div className="mt-8">
+        {/* --- SECCIÓN ELEGIR EMBUTIDOS --- */}
+        {esBocadilloEmbutido && (
+          <div className="mt-8">
             <h3 className="font-bold text-lg text-cafe-primary mb-4 border-b-2 border-cafe-primary/20 inline-block pb-1">
-               Extras <span className="text-red-500">*</span>
+              Elige tu{maxEmbutidos > 1 ? 's' : ''} embutido{maxEmbutidos > 1 ? 's' : ''} <span className="text-red-500">*</span>
             </h3>
-            <div className="space-y-4">
-                {listaExtras.map((extra, index) => {
-                    const isChecked = extrasSeleccionados.includes(extra);
-                    return (
-                        <label key={index} className="flex items-center gap-4 cursor-pointer group select-none py-1">
-                            <div className="relative flex items-center justify-center">
-                                <input
-                                    type="checkbox"
-                                    className="peer appearance-none w-8 h-8 rounded-full border-2 border-gray-400 dark:border-gray-600 checked:border-cafe-primary checked:bg-cafe-primary transition-all"
-                                    checked={isChecked}
-                                    onChange={() => toggleExtra(extra)}
-                                />
-                                <div className="absolute w-3.5 h-3.5 bg-cafe-bg rounded-full opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
-                            </div>
-                            <span className={cn(
-                                "text-base transition-colors",
-                                isChecked ? "text-cafe-primary font-bold" : "text-cafe-text group-hover:text-cafe-primary"
-                            )}>
-                                {extra}
-                            </span>
-                        </label>
-                    );
-                })}
-            </div>
-        </div>
+            <p className="text-sm text-cafe-text opacity-60 mb-4 -mt-2">
+              Selecciona {maxEmbutidos} opci{maxEmbutidos === 1 ? 'ón' : 'ones'} {maxEmbutidos > 1 && "(puedes repetir)"}
+            </p>
+            
+            <div className="space-y-2">
+              {opcionesEmbutidos.map((emb) => {
+                const cantidad = embutidosSeleccionados.filter(e => e === emb).length;
+                const totalSeleccionados = embutidosSeleccionados.length;
+                const noMas = totalSeleccionados >= maxEmbutidos;
 
-        <div className="mt-8">
+                return (
+                  <div key={emb} className="flex items-center justify-between py-3 border-b border-cafe-text/5 last:border-0">
+                    <span className={cn(
+                      "text-base transition-colors",
+                      cantidad > 0 ? "text-cafe-text font-bold" : "text-cafe-text"
+                    )}>
+                      {emb}
+                    </span>
+
+                    <div className="flex items-center gap-3">
+                      {/* BOTÓN RESTAR */}
+                      <button
+                        onClick={() => removeEmbutido(emb)}
+                        disabled={cantidad === 0}
+                        className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all",
+                          cantidad === 0 
+                            ? "border-cafe-text/20 text-cafe-text/30 cursor-not-allowed" 
+                            : "border-cafe-text text-cafe-text active:scale-95 hover:bg-cafe-text/5" 
+                        )}
+                      >
+                        <Minus size={16} strokeWidth={2.5} />
+                      </button>
+                      
+                      {/* NÚMERO */}
+                      <span className={cn(
+                        "font-bold text-lg w-6 text-center transition-colors",
+                        cantidad > 0 ? "text-cafe-text" : "text-cafe-text/40"
+                      )}>
+                        {cantidad}
+                      </span>
+                      
+                      {/* BOTÓN SUMAR */}
+                      <button
+                        onClick={() => addEmbutido(emb)}
+                        disabled={noMas}
+                        className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all",
+                          noMas 
+                            ? "border-cafe-text/20 text-cafe-text/30 cursor-not-allowed" 
+                            : "border-cafe-text text-cafe-text active:scale-95 hover:bg-cafe-text/5" 
+                        )}
+                      >
+                        <Plus size={16} strokeWidth={2.5} />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* --- INGREDIENTES NORMALES A QUITAR --- */}
+        {!esBocadilloEmbutido && (producto as any).ingredientes && (producto as any).ingredientes.length > 0 && (
+          <div className="mt-8">
+            <h3 className="font-bold text-lg text-cafe-primary mb-4 border-b-2 border-cafe-primary/20 inline-block pb-1">
+              El {producto.nombre.toLowerCase()} viene con:
+            </h3>
+            <p className="text-sm text-cafe-text opacity-60 mb-4 -mt-2">
+              Quita los ingredientes que no desees
+            </p>
+            
+            <div className="space-y-4">
+              {(producto as any).ingredientes.map((ing: string) => {
+                const isIncluido = !ingredientesQuitados.includes(ing);
+                
+                return (
+                  <label key={ing} className="flex items-center gap-4 cursor-pointer group select-none py-1">
+                    <div className="relative flex items-center justify-center">
+                      <input
+                        type="checkbox"
+                        className="peer appearance-none w-8 h-8 rounded-full border-2 border-gray-400 dark:border-gray-600 checked:border-cafe-primary checked:bg-cafe-primary transition-all cursor-pointer"
+                        checked={isIncluido}
+                        onChange={() => toggleQuitarIngrediente(ing)}
+                      />
+                      <div className="absolute w-3.5 h-3.5 bg-cafe-bg rounded-full opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+                    </div>
+                    <span className={cn(
+                      "text-base transition-colors",
+                      isIncluido ? "text-cafe-primary font-bold" : "text-cafe-text opacity-40 line-through"
+                    )}>
+                      {ing}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* SECCIÓN EXTRAS */}
+        {!esBocadilloEmbutido && listaExtras.length > 0 && (
+          <div className="mt-8">
+              <h3 className="font-bold text-lg text-cafe-primary mb-4 border-b-2 border-cafe-primary/20 inline-block pb-1">
+                  Extras <span className="text-red-500">*</span>
+              </h3>
+              <div className="space-y-4">
+                  {listaExtras.map((extra, index) => {
+                      const isChecked = extrasSeleccionados.includes(extra);
+                      return (
+                          <label key={index} className="flex items-center gap-4 cursor-pointer group select-none py-1">
+                              <div className="relative flex items-center justify-center">
+                                  <input
+                                      type="checkbox"
+                                      className="peer appearance-none w-8 h-8 rounded-full border-2 border-gray-400 dark:border-gray-600 checked:border-cafe-primary checked:bg-cafe-primary transition-all"
+                                      checked={isChecked}
+                                      onChange={() => toggleExtra(extra)}
+                                  />
+                                  <div className="absolute w-3.5 h-3.5 bg-cafe-bg rounded-full opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+                              </div>
+                              <span className={cn(
+                                  "text-base transition-colors",
+                                  isChecked ? "text-cafe-primary font-bold" : "text-cafe-text group-hover:text-cafe-primary"
+                              )}>
+                                  {extra}
+                              </span>
+                          </label>
+                      );
+                  })}
+              </div>
+          </div>
+        )}
+
+        {/* BOTÓN AÑADIR */}
+        <div className="mt-10 mb-4">
             <UiButton
               onClick={handleAnadir}
               disabled={!esValido}
@@ -264,7 +442,9 @@ export default function DetalleProducto() {
                   {!esValido
                     ? (producto.categoria === 'Bocadillo' && !tamanoSeleccionado
                         ? 'Selecciona tamaño'
-                        : 'Selecciona extras')
+                        : (esBocadilloEmbutido 
+                            ? `Faltan embutidos` 
+                            : 'Selecciona extras'))
                     : 'Añadir'}
                 </span>
                 <span>{precioTotal.toFixed(2)}€</span>
@@ -272,7 +452,7 @@ export default function DetalleProducto() {
         </div>
       </div>
 
-      {/* VENTANA DE CONFIRMACIÓN */}
+      {/* MODAL DE CONFIRMACIÓN */}
       {mostrarConfirmacion && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm animate-in fade-in duration-300">
           <div className={cn(

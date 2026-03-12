@@ -21,7 +21,7 @@ export default function Login() {
 
 
       <form className="w-full max-w-sm space-y-5">
-        <UiInput icon={<User size={20} />} placeholder="Nombre completo/Correo" />
+        <UiInput icon={<User size={20} />} type="text" placeholder="Nombre completo/Correo" />
         <UiInput icon={<Lock size={20} />} type="password" placeholder="Contraseña" />
        
         {/* Enlace de "Olvidé mi contraseña" */}

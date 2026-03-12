@@ -8,21 +8,39 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Intentamos recuperar la preferencia del usuario del almacenamiento local
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('theme');
     return saved ? JSON.parse(saved) : false;
   });
 
-  // ESTA ES LA FUNCIÓN QUE CAMBIA TODO
   useEffect(() => {
     const root = window.document.documentElement;
+    const colorFondo = isDark ? "#1A120B" : "#F3EFE0"; 
+    
+    // 1. Cambiamos la clase de Tailwind
     if (isDark) {
-      root.classList.add('dark'); // Añade la clase .dark al <html>
+      root.classList.add('dark');
     } else {
-      root.classList.remove('dark'); // Quita la clase .dark
+      root.classList.remove('dark');
     }
     localStorage.setItem('theme', JSON.stringify(isDark));
+
+    // 2. TRUCO NINJA: Destruir y recrear el Meta Tag
+    // En vez de actualizarlo, lo borramos y metemos uno nuevo para forzar al navegador a leerlo.
+    const oldMeta = document.querySelector('meta[name="theme-color"]');
+    if (oldMeta) {
+      oldMeta.remove();
+    }
+    const newMeta = document.createElement('meta');
+    newMeta.name = "theme-color";
+    newMeta.content = colorFondo;
+    document.head.appendChild(newMeta);
+
+    // 3. Forzar repintado del fondo base nativo
+    document.body.style.backgroundColor = colorFondo;
+    document.body.style.transition = "background-color 0.3s ease";
+    root.style.backgroundColor = colorFondo;
+
   }, [isDark]);
 
   return (
