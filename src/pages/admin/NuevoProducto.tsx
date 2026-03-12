@@ -25,7 +25,7 @@ export default function NuevoProducto() {
 
   const listaCategorias = ['Bocadillo', 'Bebidas frías', 'Bebida caliente', 'Bollería', 'Pack/Menú'];
   const listaAlergenos = ['Gluten', 'Crustáceos', 'Huevo', 'Pescado', 'Cacahuetes', 'Soja', 'Leche', 'Frutos con cáscara', 'Apio', 'Mostaza', 'Granos de sésamo', 'Dióxido de azufre y sulfitos', 'Altramuces', 'Moluscos'];
-  const listaIngredientes = ['Chorizo', 'Salchichón', 'Queso', 'Jamón York', 'Pechuga de pavo'];
+  const listaIngredientes = ['Queso', 'Jamón York', 'Pavo cocido'];
 
   const esFormularioValido = formData.nombre.trim() !== '' && (
     formData.categoria === 'Bocadillo'

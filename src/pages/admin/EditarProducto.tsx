@@ -90,6 +90,22 @@ export default function EditarProducto() {
     </div>
   );
 
+  // Componente Reutilizable para el Selector de Precio (Local)
+  const SelectorPrecio = ({ label, valor, onChange }: { label: string, valor: number, onChange: (n: number) => void }) => (
+    <div className="mb-4">
+      <label className="block text-sm font-bold mb-2 ml-1" style={{ color: colores.label }}>{label}</label>
+      <div className="flex items-center justify-between p-2 rounded-2xl border" style={{ backgroundColor: colores.input, borderColor: colores.borde }}>
+        <button onClick={() => onChange(-0.50)} className="p-4 rounded-xl active:scale-90 transition-transform" style={{ backgroundColor: isDark ? '#1A120B' : '#F3F4F6', color: colores.texto }}>
+          <Minus size={24} />
+        </button>
+        <span className="text-3xl font-black" style={{ color: colores.texto }}>{valor.toFixed(2)}€</span>
+        <button onClick={() => onChange(0.50)} className="p-4 rounded-xl active:scale-90 transition-transform" style={{ backgroundColor: isDark ? '#1A120B' : '#F3F4F6', color: colores.texto }}>
+          <Plus size={24} />
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className={cn(
       "fixed inset-0 z-0 w-full max-w-[600px] mx-auto overflow-hidden overscroll-none flex flex-col p-6 transition-colors duration-300",
