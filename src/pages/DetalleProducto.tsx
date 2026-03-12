@@ -1,11 +1,35 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, CheckCircle, ShoppingBag, Plus, Minus } from 'lucide-react';
+import { 
+  ChevronLeft, CheckCircle, ShoppingBag, Plus, Minus, 
+  Wheat, Shell, Egg, Fish, Bean, Milk, Nut, Leaf, Beaker, CircleDashed, Wine, AlertTriangle 
+} from 'lucide-react';
 import { productos } from '../lib/data';
 import { UiButton } from '../components/ui/Button';
 import { useCarrito } from '../context/CarritoContext';
 import { useTheme } from '../context/ThemeContext';
 import { cn } from '../lib/utils';
+
+// --- DICCIONARIO DE ALÉRGENOS OFICIALES ---
+// Utiliza los colores exactos de la normativa y los iconos más representativos de Lucide.
+// Nota: Si algún icono como <Egg /> o <Nut /> te da error, simplemente actualiza tu librería 
+// ejecutando en la consola: npm install lucide-react@latest
+const ALERGENOS_CONFIG: Record<string, { color: string, icon: React.ReactNode }> = {
+  "Gluten": { color: "bg-[#8B9A47]", icon: <Wheat size={14} className="text-white" /> },
+  "Crustáceos": { color: "bg-[#2A938C]", icon: <Shell size={14} className="text-white" /> },
+  "Huevo": { color: "bg-[#885776]", icon: <Egg size={14} className="text-white" /> },
+  "Pescado": { color: "bg-[#F3B72A]", icon: <Fish size={14} className="text-white" /> },
+  "Cacahuetes": { color: "bg-[#E88C28]", icon: <Bean size={14} className="text-white" /> },
+  "Soja": { color: "bg-[#E3266A]", icon: <Bean size={14} className="text-white" /> },
+  "Leche": { color: "bg-[#888888]", icon: <Milk size={14} className="text-white" /> },
+  "Frutos con cáscara": { color: "bg-[#A37941]", icon: <Nut size={14} className="text-white" /> },
+  "Apio": { color: "bg-[#7872A6]", icon: <Leaf size={14} className="text-white" /> },
+  "Mostaza": { color: "bg-[#0F5E5C]", icon: <Beaker size={14} className="text-white" /> },
+  "Granos de Sésamo": { color: "bg-[#D07228]", icon: <CircleDashed size={14} className="text-white" /> },
+  "Dióxido de azufre y sulfitos": { color: "bg-[#ED255D]", icon: <Wine size={14} className="text-white" /> },
+  "Altramuces": { color: "bg-[#54908C]", icon: <Leaf size={14} className="text-white" /> },
+  "Moluscos": { color: "bg-[#EA6340]", icon: <Shell size={14} className="text-white" /> }
+};
 
 export default function DetalleProducto() {
   const { id } = useParams();
@@ -28,7 +52,7 @@ export default function DetalleProducto() {
   const [tamanoSeleccionado, setTamanoSeleccionado] = useState<string | null>(null);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
   
-  // ESTADOS PARA ALERGIAS
+  // ESTADOS PARA ALERGIAS (Del cliente)
   const [tieneAlergias, setTieneAlergias] = useState(false);
   const [alergiasSeleccionadas, setAlergiasSeleccionadas] = useState<string[]>([]);
 
@@ -200,7 +224,6 @@ export default function DetalleProducto() {
         <img src={producto.img} alt={producto.nombre} className="w-full h-full object-cover" />
         <Link to="/menu" className={cn(
           "absolute top-4 left-4 p-2.5 rounded-full shadow-md transition-all active:scale-95",
-          // APLICAMOS LOS COLORES EXACTOS CORREGIDOS:
           isDark ? "bg-[#1e1611] text-[#f5ebdc]" : "bg-[#f5ebdc] text-[#1A120B]"
         )}>
           <ChevronLeft size={24} />
@@ -220,7 +243,37 @@ export default function DetalleProducto() {
           {producto.desc}
         </p>
 
-        {/* SECCIÓN DE ALERGIAS */}
+        {/* --- NUEVO: VISOR DE ALÉRGENOS DEL PRODUCTO CON ICONOS OFICIALES --- */}
+        {(producto as any).alergenos && (producto as any).alergenos.length > 0 && (
+          <div className="mt-6 border-t border-b border-black/5 dark:border-white/5 py-4">
+            <h3 className="text-xs font-bold text-cafe-text opacity-50 uppercase tracking-wider mb-3">
+              Contiene alérgenos:
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {(producto as any).alergenos.map((alergeno: string) => {
+                const config = ALERGENOS_CONFIG[alergeno] || { color: "bg-gray-500", icon: <AlertTriangle size={14} className="text-white" /> };
+                return (
+                  <div
+                    key={alergeno}
+                    className={cn(
+                      "flex items-center gap-2 pr-3 pl-1 py-1 rounded-full border shadow-sm",
+                      isDark ? "bg-[#2C221C] border-white/5" : "bg-white border-black/5"
+                    )}
+                  >
+                    <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 shadow-inner", config.color)}>
+                      {config.icon}
+                    </div>
+                    <span className={cn("text-xs font-bold", isDark ? "text-[#F5EBDC]" : "text-[#4E342E]")}>
+                      {alergeno}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* SECCIÓN DE ALERGIAS DEL CLIENTE (Mejorada visualmente) */}
         <div className="mt-8">
           <label className="flex items-center gap-4 cursor-pointer group select-none">
             <div className="relative flex items-center justify-center">
@@ -236,27 +289,39 @@ export default function DetalleProducto() {
               "text-lg font-bold transition-colors",
               tieneAlergias ? "text-cafe-primary" : "text-cafe-text"
             )}>
-              Alergias
+              Tengo alergias (Quitar ingredientes)
             </span>
           </label>
 
           {tieneAlergias && (
             <div className="mt-4 p-4 bg-black/5 dark:bg-white/5 rounded-2xl animate-in slide-in-from-top-2 duration-300">
+              <p className="text-xs opacity-60 mb-3 font-medium">Selecciona tus alergias para avisar a cocina:</p>
               <div className="flex flex-wrap gap-2">
-                {listaAlergenos.map((alergia) => (
-                  <button
-                    key={alergia}
-                    onClick={() => toggleAlergia(alergia)}
-                    className={cn(
-                      "px-3 py-1.5 rounded-full text-[11px] font-bold transition-all border",
-                      alergiasSeleccionadas.includes(alergia)
-                        ? "bg-cafe-primary border-cafe-primary text-black"
-                        : "bg-transparent border-cafe-text/20 text-cafe-text/60"
-                    )}
-                  >
-                    {alergia}
-                  </button>
-                ))}
+                {listaAlergenos.map((alergia) => {
+                  const config = ALERGENOS_CONFIG[alergia] || { color: "bg-gray-500", icon: <AlertTriangle size={14} className="text-white" /> };
+                  const isSelected = alergiasSeleccionadas.includes(alergia);
+                  
+                  return (
+                    <button
+                      key={alergia}
+                      onClick={() => toggleAlergia(alergia)}
+                      className={cn(
+                        "flex items-center gap-1.5 pr-3 pl-1.5 py-1.5 rounded-full text-[11px] font-bold transition-all border shadow-sm",
+                        isSelected
+                          ? "bg-cafe-primary/10 border-cafe-primary text-cafe-text dark:text-[#F5EBDC]"
+                          : "bg-white dark:bg-[#2C221C] border-transparent text-cafe-text/60 hover:bg-black/5 dark:hover:bg-white/5"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-5 h-5 rounded-full flex items-center justify-center transition-all shrink-0",
+                        isSelected ? config.color : "bg-gray-300 dark:bg-gray-700 grayscale opacity-50"
+                      )}>
+                        {config.icon}
+                      </div>
+                      {alergia}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
