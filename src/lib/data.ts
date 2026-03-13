@@ -9,6 +9,7 @@ export const productos = [
     desc: "El clásico. Elige jamón york, pavo cocido o queso.",
     precioEntero: 1.50,
     precioMedio: 1.00,
+    precioPulguita: 1.50,
     ingredientes: ["Pan", "Embutido"],
     alergenos: ["Gluten"]
   },
@@ -21,6 +22,7 @@ export const productos = [
     desc: "Mezcla dos sabores a tu elección.",
     precioEntero: 1.70,
     precioMedio: 1.20,
+    precioPulguita: 1.50,
     ingredientes: ["Pan", "Embutido"],
     alergenos: ["Gluten", "Soja"]
   },
@@ -33,6 +35,7 @@ export const productos = [
     desc: "Jamón serrano recién cortado en pan crujiente.",
     precioEntero: 1.80,
     precioMedio: 1.30,
+    precioPulguita: 1.50,
     ingredientes: ["Pan", "Jamón serrano"],
     alergenos: ["Gluten", "Dióxido de azufre y sulfitos"]
   },
@@ -45,8 +48,9 @@ export const productos = [
     desc: "Clásica tortilla de papas casera, jugosa y tierna.",
     precioEntero: 2.00,
     precioMedio: 1.20,
+    precioPulguita: 1.50,
     ingredientes: ["Pan", "Tortilla de papas"],
-    alergenos: ["Huevos", "Gluten"]
+    alergenos: ["Huevo", "Gluten"]
   },
   {
     id: 5,
@@ -57,6 +61,7 @@ export const productos = [
     desc: "Cinta de lomo a la plancha recién hecha.",
     precioEntero: 2.20,
     precioMedio: 1.30,
+    precioPulguita: 1.50,
     ingredientes: ["Pan", "Lomo a la plancha"],
     alergenos: ["Soja", "Leche", "Gluten"]
   },
@@ -69,8 +74,9 @@ export const productos = [
     desc: "Atún, lechuga crujiente, tomate natural y mayonesa.",
     precioEntero: 1.80,
     precioMedio: 1.30,
+    precioPulguita: 1.50,
     ingredientes: ["Pan", "Atún","Maíz dulce", "Lechuga", "Tomate ", "Mayonesa"],
-    alergenos: ["Pescado", "Huevos", "Gluten", "Soja"]
+    alergenos: ["Pescado", "Huevo", "Gluten", "Soja"]
   },
   {
     id: 7,
@@ -81,6 +87,7 @@ export const productos = [
     desc: "El clásico sandwich de jamón york y queso fundido.",
     precioEntero: 1.70,
     precioMedio: 1.70,
+    precioPulguita: 1.50,
     ingredientes: ["Pan de molde", "Jamón cocido", "Queso gouda"],
     alergenos: ["Leche", "Gluten", "Soja"]
   },

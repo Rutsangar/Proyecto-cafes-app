@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
-import { useProductos } from '../context/ProductosContext';
-import { useTheme } from '../context/ThemeContext';
-import { Link } from 'react-router-dom';
-import { cn } from '../lib/utils';
+import { useState, useEffect } from "react";
+import { useProductos } from "../context/ProductosContext";
+import { useTheme } from "../context/ThemeContext";
+import { Link } from "react-router-dom";
+import { cn } from "../lib/utils";
 
 export default function Menu() {
-  const { listaProductos } = useProductos(); 
-  const { isDark } = useTheme(); 
-  
+  const { listaProductos } = useProductos();
+  const { isDark } = useTheme();
+
   const [categoriaActiva, setCategoriaActiva] = useState(() => {
     return sessionStorage.getItem("menuCategoriaActiva") || "Bocadillo";
   });
@@ -17,23 +17,28 @@ export default function Menu() {
   }, [categoriaActiva]);
 
   const categorias = [
-    'Bocadillo', 
-    'Bebidas frías', 
-    'Bebida caliente', 
-    'Bollería', 
-    'Pack/Menú'
+    "Bocadillo",
+    "Bebidas frías",
+    "Bebida caliente",
+    "Bollería",
+    "Pack/Menú",
   ];
 
-  const productosFiltrados = listaProductos.filter(p => p.categoria === categoriaActiva);
+  const productosFiltrados = listaProductos.filter(
+    (p) => p.categoria === categoriaActiva,
+  );
 
   return (
     <div className="pb-24 min-h-screen transition-colors duration-300">
-      
-      {/* CABECERA FIJA (Sticky) */}
-      <div className={cn(
-        "sticky top-0 z-40 pt-8 pb-4 px-6 transition-colors duration-300 border-b",
-        isDark ? "bg-[#1A120B] border-white/5" : "bg-[#F3EFE0] border-black/5"
-      )}>
+      {/* CABECERA FIJA */}
+      <div
+        className={cn(
+          "sticky top-0 z-40 pt-8 pb-4 px-6 transition-colors duration-300 border-b",
+          isDark
+            ? "bg-[#1A120B] border-white/5"
+            : "bg-[#F3EFE0] border-black/5",
+        )}
+      >
         <h1 className="text-3xl font-bold text-center text-cafe-text mb-6">
           Menú cafetería
         </h1>
@@ -49,8 +54,8 @@ export default function Menu() {
                 className={cn(
                   "px-5 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap border",
                   isActive
-                    ? "bg-cafe-primary text-[var(--btn-text)] border-cafe-primary shadow-md" 
-                    : "bg-transparent text-cafe-text border-cafe-text/30 hover:border-cafe-text"
+                    ? "bg-cafe-primary text-[var(--btn-text)] border-cafe-primary shadow-md"
+                    : "bg-transparent text-cafe-text border-cafe-text/30 hover:border-cafe-text",
                 )}
               >
                 {cat}
@@ -64,18 +69,18 @@ export default function Menu() {
       <div className="flex flex-col mt-2 px-6 min-h-[300px]">
         {productosFiltrados.length > 0 ? (
           productosFiltrados.map((prod) => (
-            <Link 
-              key={prod.id} 
-              to={`/producto/${prod.id}`} 
+            <Link
+              key={prod.id}
+              to={`/producto/${prod.id}`}
               className="group flex gap-4 items-center py-5 border-b border-cafe-text/10 dark:border-white/10 last:border-none hover:bg-black/5 dark:hover:bg-white/5 transition-colors rounded-xl px-2 -mx-2 animate-in fade-in slide-in-from-bottom-1 duration-300"
             >
-              {/* Imagen (Un poco más grande para encajar bien con el texto extra) */}
-              <img 
-                src={prod.img} 
-                alt={prod.nombre} 
-                className="w-24 h-24 object-cover rounded-xl shadow-sm bg-gray-100 shrink-0" 
+              {/* Imagen */}
+              <img
+                src={prod.img}
+                alt={prod.nombre}
+                className="w-24 h-24 object-cover rounded-xl shadow-sm bg-gray-100 shrink-0"
               />
-              
+
               {/* Contenedor de Textos */}
               <div className="flex-1 flex flex-col justify-center">
                 {/* Fila superior: Título a la izq y Precio a la der */}
@@ -87,7 +92,7 @@ export default function Menu() {
                     {prod.precio.toFixed(2)}€
                   </span>
                 </div>
-                
+
                 {/* Descripción debajo del título */}
                 <p className="text-sm text-cafe-text opacity-70 line-clamp-2 leading-snug">
                   {prod.desc}
